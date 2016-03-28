@@ -38,14 +38,17 @@ void AddNodeToNodePool(Node** nodePool, Node* n, int* size, int* maxSize)
   nodePool[*size] = n;
 }
 
+// assume that the head of lb is this dummy
 void CheckAbove(Node* rowDummyNode, Node* thisDummy, LineBlob* lb,
                 double tol)
 {
   Node* curr = rowDummyNode->next;
   while(curr != NULL)
   {
-    byte t = IsSimilarColor(curr->data, lb, tol);
-    if(t)
+    byte c = IsSimilarColor(curr->data, lb, tol);
+    byte a = IsAdjacent(curr->data, lb);
+
+    if(a && c)
     {
 
     }
@@ -59,7 +62,7 @@ byte IsSimilarColor(LineBlob* lb1, LineBlob* lb2, double tol)
 
   int red = lb1->averages[0] - lb2->averages[0];
   int green = lb1->averages[1] - lb2->averages[1];
-  int blue = lb1->averages[2 ] - lb2->averages[2];
+  int blue = lb1->averages[2] - lb2->averages[2];
 
   double dist = sqrt(red*red + green*green + blue*blue);
 
