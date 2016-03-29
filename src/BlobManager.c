@@ -40,10 +40,10 @@ void AddBlobLLToListPool(BlobLL** blobPool, BlobLL n, int* size, int* maxSize)
 }
 
 // assume that the head of lb is this dummy
-void CheckAbove(Node* rowDummyNode, Node* thisDummy, LineBlob* lb,
+void CheckAbove(BlobLL* rowLL, BlobLL* thisDummy, LineBlob* lb,
                 double tol)
 {
-  Node* curr = rowDummyNode->next;
+  Node* curr = rowLL->dummy->next;
   while(curr != NULL)
   {
     byte c = IsSimilarColor(curr->data, lb, tol);

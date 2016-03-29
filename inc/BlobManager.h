@@ -17,7 +17,7 @@ void AddLineBlobToArray(struct LineBlob** lbArray, struct LineBlob* lb,
                         int* size, int* maxSize);
 void AddBlobLLToListPool(BlobLL** blobPool, BlobLL n, int* size, int* maxSize);
 // adds all the nodes that contain data similar to the given LineBlob
-void CheckAbove(Node* rowDummyNode, Node* thisDummy, LineBlob* lb,
+void CheckAbove(BlobLL* rowLL, BlobLL* thisDummy, LineBlob* lb,
                 double tol);
 byte IsAdjacent(LineBlob* lbChecking, LineBlob* curr);
 
