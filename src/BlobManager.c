@@ -23,19 +23,18 @@ void AddLineBlobToArray(LineBlob** lbArray, LineBlob* lbp,
   lbArray[*size] = lbp;
 }
 
-void AddNodeToNodePool(Node** nodePool, Node* n, int* size, int* maxSize)
+void AddBlobLLToListPool(BlobLL* blobPool, BlobLL n, int* size, int* maxSize)
 {
   (*size) = (*size) + 1;
   if(size >= maxSize)
   {
     (*maxSize) = (*maxSize) * 2;
-    Node** newNodePool = malloc(sizeof(Node*) * (*maxSize));
-    memcpy(newNodePool, nodePool, (*size)-1 * sizeof(Node*));
-    free(nodePool);
-    nodePool = newNodePool;
+    BlobLL* newNodePool = malloc(sizeof(BlobLL) * (*maxSize));
+    memcpy(newNodePool, blobPool, (*size)-1 * sizeof(BlobLL));
+    free(blobPool);
+    blobPool = newNodePool;
   }
-
-  nodePool[*size] = n;
+  blobPool[*size] = n;
 }
 
 // assume that the head of lb is this dummy

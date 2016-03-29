@@ -9,13 +9,14 @@
 
 #define null -1
 
-typedef struct Blob
+typedef struct BlobLL
 {
-  struct LineBlob* lines;
+  struct Node* dummy;
+  struct Node* tail;
   int color[3];
   int size;
   int maxSize;
-} Blob;
+} BlobLL;
 
 // startIndex and endIndex will be the index for that row
 // in order to get the real index you'll have to mutliply it by "row"
@@ -36,6 +37,7 @@ typedef struct Node
   struct Node* next;
   struct Node* prev;
   LineBlob* data;
+  BlobLL* list;
 } Node;
 
 /*
@@ -51,12 +53,16 @@ byte IsSimilarColor(LineBlob* lb1, LineBlob* lb2, double tol);
 */
 //stuff for the Linked List
 // same as addLast
-void add(struct Node* dummy, struct Node* newNode);
-void addHead(struct Node* dummy, struct Node* newNode);
-void addData(struct Node* dummy, LineBlob* data);
-void addHeadData(struct Node* dummy, LineBlob* data);
-Node* getDummy(struct Node* n);
-void printLinkedList(Node* dummy);
+void add(BlobLL* dummy, struct Node* newNode);
+void addHead(BlobLL* dummy, struct Node* newNode);
+void addData(BlobLL* dummy, LineBlob* data);
+void addHeadData(BlobLL* dummy, LineBlob* data);
+BlobLL* getListPointer(Node* n);
+Node* getTail(BlobLL* dummy);
+// add the two linked lists and free dummy1
+// add 1 to 2 and get rid of 1
+void mergeLinkedLists(BlobLL* dummy1, BlobLL* dummy2);
+void printLinkedList(BlobLL* dummy);
 void printBackwards(Node* n);
 void printNode(Node* n);
 void printData(LineBlob* lb);

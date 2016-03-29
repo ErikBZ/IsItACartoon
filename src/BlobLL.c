@@ -35,6 +35,7 @@ Node* putInNode(LineBlob* lb)
   new->next = NULL;
   new->prev = NULL;
   new->data = lb;
+  new->list = NULL;
 
   return new;
 }
@@ -45,15 +46,16 @@ Node createDummy()
   new.next = NULL;
   new.prev = NULL;
   new.data = NULL;
+  new.list = NULL;
 
   return new;
 }
 
 
 // same as add last
-void add(Node* dummy, Node* newNode)
+void add(BlobLL* dummy, Node* newNode)
 {
-  Node* curr = dummy;
+  Node* curr = dummy->dummy;
   if(curr->next != NULL)
   {
     curr = curr->next;
@@ -62,40 +64,42 @@ void add(Node* dummy, Node* newNode)
 
   newNode->next = NULL;
   newNode->prev = curr;
+
+  dummy->tail = newNode;
 }
 
-void addHead(Node* dummy, Node* newNode)
+void addHead(BlobLL* dummy, Node* newNode)
 {
-  Node* nextNode = dummy->next;
+  Node* nextNode = dummy->dummy->next;
   if(nextNode != NULL)
   {
     nextNode->prev = newNode;
-    newNode->prev = dummy;
+    newNode->prev = dummy->dummy;
     newNode->next = nextNode;
   }
   else
   {
     newNode->next = NULL;
-    newNode->prev = dummy;
+    newNode->prev = dummy->dummy;
   }
-  dummy->next = newNode;
+  dummy->dummy->next = newNode;
 }
 
-void addData(Node* dummy, LineBlob* data)
+void addData(BlobLL* dummy, LineBlob* data)
 {
   Node* newNode = malloc(sizeof(Node));
   newNode->data = data;
   add(dummy, newNode);
 }
 
-void addHeadData(Node* dummy, LineBlob* data)
+void addHeadData(BlobLL* dummy, LineBlob* data)
 {
   Node* newNode = malloc(sizeof(Node));
   newNode->data = data;
   add(dummy, newNode);
 }
 
-Node* getDummy(struct Node* n)
+BlobLL* getListPointer(struct Node* n)
 {
   Node* curr = n;
 
@@ -105,15 +109,22 @@ Node* getDummy(struct Node* n)
   }
   // previous is null and data is null then there is no dummy for some reaosn
   // dummies should be the node with previous as null AND data as null
-  if(curr->data != NULL)
-    return NULL;
-  return curr;
+  return curr->list;
 }
 
-
-void printLinkedList(Node* dummy)
+Node* getTail(BlobLL* dummy)
 {
-  Node* curr = dummy;
+  return dummy->tail;
+}
+
+// assuming that dummy1 and dummy2 are non empty
+void mergeLinkedLists(BlobLL* dummy1, BlobLL* dummy2)
+{
+}
+
+void printLinkedList(BlobLL* dummy)
+{
+  Node* curr = dummy->dummy;
   while(curr->next != NULL)
   {
     curr = curr->next;

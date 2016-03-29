@@ -15,11 +15,10 @@ byte IsSimilarColor(LineBlob* lb1, LineBlob* lb2, double tol);
 // things for building the Blob
 void AddLineBlobToArray(struct LineBlob** lbArray, struct LineBlob* lb,
                         int* size, int* maxSize);
-void AddNodeToNodePool(Node** nodePool, Node* n, int* size, int* maxSize);
+void AddBlobLLToListPool(BlobLL* blobPool, BlobLL n, int* size, int* maxSize);
 // adds all the nodes that contain data similar to the given LineBlob
 void CheckAbove(Node* rowDummyNode, Node* thisDummy, LineBlob* lb,
                 double tol);
 byte IsAdjacent(LineBlob* lbChecking, LineBlob* curr);
-
 
 #endif
