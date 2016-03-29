@@ -23,18 +23,20 @@ void AddLineBlobToArray(LineBlob** lbArray, LineBlob* lbp,
   lbArray[*size] = lbp;
 }
 
-void AddBlobLLToListPool(BlobLL* blobPool, BlobLL n, int* size, int* maxSize)
+// BlobLL has to be a double pointer so that the real pointer
+// can be changed. now i can also free the malloc'd pointer prior
+void AddBlobLLToListPool(BlobLL** blobPool, BlobLL n, int* size, int* maxSize)
 {
-  (*size) = (*size) + 1;
-  if(size >= maxSize)
+  if((*size) >= (*maxSize))
   {
     (*maxSize) = (*maxSize) * 2;
     BlobLL* newNodePool = malloc(sizeof(BlobLL) * (*maxSize));
-    memcpy(newNodePool, blobPool, (*size)-1 * sizeof(BlobLL));
-    free(blobPool);
-    blobPool = newNodePool;
+    memcpy(newNodePool, *blobPool, (*size) * sizeof(BlobLL));
+    free(*blobPool);
+    *blobPool = newNodePool;
   }
-  blobPool[*size] = n;
+  (*blobPool)[*size] = n;
+  (*size) = (*size) + 1;
 }
 
 // assume that the head of lb is this dummy

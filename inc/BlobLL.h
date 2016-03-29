@@ -13,7 +13,7 @@ typedef struct BlobLL
 {
   struct Node* dummy;
   struct Node* tail;
-  int color[3];
+  int* color;
   int size;
   int maxSize;
 } BlobLL;
