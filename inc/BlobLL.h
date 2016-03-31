@@ -32,25 +32,15 @@ typedef struct LineBlob
 
 // if node is a dummy node then it points to 0
 // else all new nodes point to -1
+// I CAN JUST USE *VOID YAYYYY
 typedef struct Node
 {
   struct Node* next;
   struct Node* prev;
-  LineBlob* data;
+  void* data;
   BlobLL* list;
 } Node;
 
-/*
-// things for building the Blob
-void AddLineBlobToArray(struct LineBlob** lbArray, struct LineBlob* lb,
-                        int* size, int* maxSize);
-void AddNodeToNodePool(Node** nodePool, Node* n, int* size, int* maxSize);
-// adds all the nodes that contain data similar to the given LineBlob
-void CheckAbove(Node* rowDummyNode, Node* thisDummy, LineBlob* lb,
-                double tol);
-byte IsAdjacent(LineBlob* lbChecking, LineBlob* curr);
-byte IsSimilarColor(LineBlob* lb1, LineBlob* lb2, double tol);
-*/
 //stuff for the Linked List
 // same as addLast
 void add(BlobLL* dummy, struct Node* newNode);
@@ -67,6 +57,8 @@ void printBackwards(Node* n);
 void printNode(Node* n);
 void printData(LineBlob* lb);
 
+// since data is void* then this will be the best thing to
+// use to create line blobs
 LineBlob* createLine(int s, int e, int r, byte* averages);
 Node* createNode(int s, int e, int r, byte* averages);
 Node* putInNode(LineBlob* lb);

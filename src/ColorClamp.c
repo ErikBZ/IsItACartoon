@@ -10,32 +10,6 @@
 #include "ColorClamp.h"
 #include "image.h"
 
-// int main(int argc, char** argv)
-// {
-//   if(argc != 2)
-//     printf("Need 2 arguments. ColorClamp xxx.ppm\n");
-//
-//   struct Image* img = malloc(sizeof(struct Image));
-//   struct Image* clampedImage;
-//   clampedImage = malloc(sizeof(struct Image));
-//   byte* tolerances = malloc(3 * sizeof(byte));
-//   tolerances[0] = 37;
-//   tolerances[1] = 37;
-//   tolerances[2] = 37;
-//   ReadImage(argv[1], img);
-//
-//   printf("%d\n", img->NofC);
-//   printf("%d\n", img->NofR);
-//   printf("%d\n", img->NofC * img->NofR);
-//
-//   ClampColor(img, clampedImage, tolerances);
-//
-//   WriteImage("out.ppm", *clampedImage);
-//
-//   free(clampedImage);
-//   free(img);
-// }
-
 void ClampColor(struct Image* img, struct Image* clampedImage, byte* tolerances)
 {
   int i = 0;

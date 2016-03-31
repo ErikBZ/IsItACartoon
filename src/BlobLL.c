@@ -151,7 +151,6 @@ void printNode(Node* curr)
   printf("This pointer:%p\n", curr);
   printf("Previous Pointer: %p\n", curr->prev);
   printf("Next Pointer: %p\n", curr->next);
-  printData(curr->data);
 }
 
 void printData(LineBlob* lb)

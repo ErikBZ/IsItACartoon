@@ -51,7 +51,6 @@ void CheckAbove(BlobLL* rowLL, BlobLL* thisDummy, LineBlob* lb,
 
     if(a && c)
     {
-
     }
     curr = curr->next;
   }
@@ -61,16 +60,22 @@ byte IsSimilarColor(LineBlob* lb1, LineBlob* lb2, double tol)
 {
   byte similarColor = 0;
 
-  int red = lb1->averages[0] - lb2->averages[0];
-  int green = lb1->averages[1] - lb2->averages[1];
-  int blue = lb1->averages[2] - lb2->averages[2];
-
-  double dist = sqrt(red*red + green*green + blue*blue);
+  double dist = threeVarRadius(lb1->averages, lb2->averages);
 
   if(dist < tol)
     similarColor = 1;
 
   return similarColor;
+}
+
+double threeVarRadius(byte* arr1, byte* arr2)
+{
+  int red = arr1[0] - arr2[0];
+  int green =  arr1[1] - arr2[1];
+  int blue =  arr1[2] - arr2[2];
+
+  double dist = sqrt(red*red + green*green + blue*blue);
+  return dist;
 }
 
 byte IsAdjacent(LineBlob* lbChecking, LineBlob* curr)

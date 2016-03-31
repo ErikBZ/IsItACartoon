@@ -13,6 +13,7 @@
 
 byte IsSimilarColor(LineBlob* lb1, LineBlob* lb2, double tol);
 // things for building the Blob
+double threeVarRadius(byte* arr1, byte* arr2);
 void AddLineBlobToArray(struct LineBlob** lbArray, struct LineBlob* lb,
                         int* size, int* maxSize);
 void AddBlobLLToListPool(BlobLL** blobPool, BlobLL n, int* size, int* maxSize);
