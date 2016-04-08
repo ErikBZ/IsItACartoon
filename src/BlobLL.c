@@ -53,50 +53,48 @@ Node createDummy()
 
 
 // same as add last
-void add(BlobLL* dummy, Node* newNode)
+void add(BlobLL* blob, Node* newNode)
 {
-  Node* curr = dummy->dummy;
-  if(curr->next != NULL)
+  if(blob->size = 0)
   {
-    curr = curr->next;
-  }
-  curr->next = newNode;
-
-  newNode->next = NULL;
-  newNode->prev = curr;
-
-  dummy->tail = newNode;
-}
-
-void addHead(BlobLL* dummy, Node* newNode)
-{
-  Node* nextNode = dummy->dummy->next;
-  if(nextNode != NULL)
-  {
-    nextNode->prev = newNode;
-    newNode->prev = dummy->dummy;
-    newNode->next = nextNode;
+    blob->head = newNode;
+    blob->tail = newNode;
   }
   else
   {
-    newNode->next = NULL;
-    newNode->prev = dummy->dummy;
+    blob->tail = newNode;
+    newNode->prev = tail;
+    tail = newNode;
   }
-  dummy->dummy->next = newNode;
+  blob->size += 1;
 }
 
-void addData(BlobLL* dummy, LineBlob* data)
+void addHead(BlobLL* blob, Node* newNode)
+{
+  if(blob->size == 0)
+  {
+    blob->head = newNode;
+    blob->tail = newNode;
+  }
+  else
+  {
+    blob->head = newNode;
+    newNode->next = blob->head;
+  }
+}
+
+void addData(BlobLL* blob, LineBlob* data)
 {
   Node* newNode = malloc(sizeof(Node));
   newNode->data = data;
-  add(dummy, newNode);
+  add(blob, newNode);
 }
 
-void addHeadData(BlobLL* dummy, LineBlob* data)
+void addHeadData(BlobLL* blob, LineBlob* data)
 {
   Node* newNode = malloc(sizeof(Node));
   newNode->data = data;
-  add(dummy, newNode);
+  add(blob, newNode);
 }
 
 BlobLL* getListPointer(struct Node* n)
@@ -107,24 +105,24 @@ BlobLL* getListPointer(struct Node* n)
   {
     curr = curr->prev;
   }
-  // previous is null and data is null then there is no dummy for some reaosn
+  // previous is null and data is null then there is no blob for some reaosn
   // dummies should be the node with previous as null AND data as null
   return curr->list;
 }
 
-Node* getTail(BlobLL* dummy)
+Node* getTail(BlobLL* blob)
 {
-  return dummy->tail;
+  return blob->tail;
 }
 
-// assuming that dummy1 and dummy2 are non empty
-void mergeLinkedLists(BlobLL* dummy1, BlobLL* dummy2)
+// assuming that blob1 and blob2 are non empty
+void mergeLinkedLists(BlobLL* blob1, BlobLL* blob2)
 {
 }
 
-void printLinkedList(BlobLL* dummy)
+void printLinkedList(BlobLL* blob)
 {
-  Node* curr = dummy->dummy;
+  Node* curr = blob->head;
   while(curr->next != NULL)
   {
     curr = curr->next;
@@ -143,7 +141,7 @@ void printBackwards(Node* n)
   if(curr->data == NULL)
     printNode(curr);
   else
-    printf("There is no dummy node");
+    printf("There is no head node");
 }
 
 void printNode(Node* curr)

@@ -11,11 +11,10 @@
 
 typedef struct BlobLL
 {
-  struct Node* dummy;
+  struct Node* head;
   struct Node* tail;
   int* color;
   int size;
-  int maxSize;
 } BlobLL;
 
 // startIndex and endIndex will be the index for that row
@@ -30,7 +29,7 @@ typedef struct LineBlob
   byte* averages;
 } LineBlob;
 
-// if node is a dummy node then it points to 0
+// if node is a head node then it points to 0
 // else all new nodes point to -1
 // I CAN JUST USE *VOID YAYYYY
 typedef struct Node
@@ -43,16 +42,16 @@ typedef struct Node
 
 //stuff for the Linked List
 // same as addLast
-void add(BlobLL* dummy, struct Node* newNode);
-void addHead(BlobLL* dummy, struct Node* newNode);
-void addData(BlobLL* dummy, LineBlob* data);
-void addHeadData(BlobLL* dummy, LineBlob* data);
+void add(BlobLL* blob, struct Node* newNode);
+void addHead(BlobLL* blob, struct Node* newNode);
+void addData(BlobLL* blob, LineBlob* data);
+void addHeadData(BlobLL* blob, LineBlob* data);
 BlobLL* getListPointer(Node* n);
-Node* getTail(BlobLL* dummy);
-// add the two linked lists and free dummy1
+Node* getTail(BlobLL* blob);
+// add the two linked lists and free blob1
 // add 1 to 2 and get rid of 1
-void mergeLinkedLists(BlobLL* dummy1, BlobLL* dummy2);
-void printLinkedList(BlobLL* dummy);
+void mergeLinkedLists(BlobLL* blob1, BlobLL* blob2);
+void printLinkedList(BlobLL* blob);
 void printBackwards(Node* n);
 void printNode(Node* n);
 void printData(LineBlob* lb);
