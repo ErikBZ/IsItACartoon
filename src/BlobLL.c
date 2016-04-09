@@ -55,16 +55,17 @@ Node createDummy()
 // same as add last
 void add(BlobLL* blob, Node* newNode)
 {
-  if(blob->size = 0)
+  if(blob->size == 0)
   {
     blob->head = newNode;
     blob->tail = newNode;
   }
   else
   {
+    blob->tail->next = newNode;
+    newNode->prev = blob->tail;
     blob->tail = newNode;
-    newNode->prev = tail;
-    tail = newNode;
+    newNode->next = NULL;
   }
   blob->size += 1;
 }
@@ -78,9 +79,10 @@ void addHead(BlobLL* blob, Node* newNode)
   }
   else
   {
-    blob->head = newNode;
     newNode->next = blob->head;
+    blob->head = newNode;
   }
+  blob->size += 1;
 }
 
 void addData(BlobLL* blob, LineBlob* data)
@@ -123,10 +125,10 @@ void mergeLinkedLists(BlobLL* blob1, BlobLL* blob2)
 void printLinkedList(BlobLL* blob)
 {
   Node* curr = blob->head;
-  while(curr->next != NULL)
+  while(curr != NULL)
   {
-    curr = curr->next;
     printNode(curr);
+    curr = curr->next;
   }
 }
 

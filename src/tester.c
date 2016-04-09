@@ -22,13 +22,15 @@ int main(int argc, char** argv)
   // used for horizontal lines
   // make sure row is initialized with something
   BlobLL row;
-  row.dummy = malloc(sizeof(Node));
+  row.size = 0;
+  row.head = malloc(sizeof(Node));
   Node* n = malloc(sizeof(Node));
   n->data = malloc(sizeof(Node));
   Node* n2 = malloc(sizeof(Node));
   n2->data = malloc(sizeof(Node));
   add(&row, n);
   add(&row, n2);
+
   printLinkedList(&row);
 
   printf("\n");
