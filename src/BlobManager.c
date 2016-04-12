@@ -43,7 +43,7 @@ void AddBlobLLToListPool(BlobLL** blobPool, BlobLL n, int* size, int* maxSize)
 void CheckAbove(BlobLL* rowLL, BlobLL* thisDummy, LineBlob* lb,
                 double tol)
 {
-  Node* curr = rowLL->dummy->next;
+  Node* curr = rowLL->head;
   while(curr != NULL)
   {
     byte c = IsSimilarColor(curr->data, lb, tol);
@@ -51,6 +51,9 @@ void CheckAbove(BlobLL* rowLL, BlobLL* thisDummy, LineBlob* lb,
 
     if(a && c)
     {
+      Node* blobNode = curr->data;
+      BlobLL* llPointer = getListPointer(blobNode);
+      mergeLinkedLists(thisDummy, llPointer);
     }
     curr = curr->next;
   }

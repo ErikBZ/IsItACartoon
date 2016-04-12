@@ -59,6 +59,7 @@ void add(BlobLL* blob, Node* newNode)
   {
     blob->head = newNode;
     blob->tail = newNode;
+    newNode->list = blob;
   }
   else
   {
@@ -66,6 +67,7 @@ void add(BlobLL* blob, Node* newNode)
     newNode->prev = blob->tail;
     blob->tail = newNode;
     newNode->next = NULL;
+    newNode->list = NULL;
   }
   blob->size += 1;
 }
@@ -76,11 +78,14 @@ void addHead(BlobLL* blob, Node* newNode)
   {
     blob->head = newNode;
     blob->tail = newNode;
+    newNode->list = blob;
   }
   else
   {
     newNode->next = blob->head;
+    blob->head->list = NULL;
     blob->head = newNode;
+    newNode->list = blob;
   }
   blob->size += 1;
 }
@@ -118,8 +123,23 @@ Node* getTail(BlobLL* blob)
 }
 
 // assuming that blob1 and blob2 are non empty
+// blob2 is added to blob1
 void mergeLinkedLists(BlobLL* blob1, BlobLL* blob2)
 {
+  Node* blob2Head = blob2->head;
+  blob1->tail->next = blob2Head;
+  blob2Head->prev = blob1->tail;
+  blob1->color[0] = (blob1->color[0] + blob2->color[0])/2;
+  blob1->color[1] = (blob1->color[1] + blob2->color[1])/2;
+  blob1->color[2] = (blob1->color[2] + blob2->color[2])/2;
+  blob1->size = blob2->size + blob1->size;
+
+  blob2Head->list = NULL;
+  blob2->head = NULL;
+  blob2->tail = NULL;
+  free(blob2->color);
+  blob2->color = NULL;
+  blob2->size = 0;
 }
 
 void printLinkedList(BlobLL* blob)
