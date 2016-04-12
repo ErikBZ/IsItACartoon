@@ -17,6 +17,13 @@ typedef struct BlobLL
   int size;
 } BlobLL;
 
+typedef struct BlobPool
+{
+  struct BlobLL* blobPool;
+  int size;
+  int maxSize;
+} BlobPool;
+
 // startIndex and endIndex will be the index for that row
 // in order to get the real index you'll have to mutliply it by "row"
 // which will give you the index in the big array created by image.h

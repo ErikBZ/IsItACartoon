@@ -23,6 +23,23 @@ void AddLineBlobToArray(LineBlob** lbArray, LineBlob* lbp,
   lbArray[*size] = lbp;
 }
 
+ void FindBlobsInImage(BlobPool* pool, struct Image* img)
+ {
+   int i,j;
+   byte color[3];
+   for(i=0;i<img->NofR;i++)
+   {
+     color[0] = img->red[i*img->NofR];
+     color[1] = img->green[i*img->NofR];
+     color[2] = img->blue[i*img->NofR];
+
+     for(j=0;img->NofC;j++)
+     {
+       int index = i*img->NofR + j;
+     }
+   }
+ }
+
 // BlobLL has to be a double pointer so that the real pointer
 // can be changed. now i can also free the malloc'd pointer prior
 void AddBlobLLToListPool(BlobLL** blobPool, BlobLL n, int* size, int* maxSize)
@@ -43,6 +60,9 @@ void AddBlobLLToListPool(BlobLL** blobPool, BlobLL n, int* size, int* maxSize)
 void CheckAbove(BlobLL* rowLL, BlobLL* thisDummy, LineBlob* lb,
                 double tol)
 {
+  if(rowLL->head == NULL)
+    return;
+
   Node* curr = rowLL->head;
   while(curr != NULL)
   {
