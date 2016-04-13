@@ -90,14 +90,14 @@ void addHead(BlobLL* blob, Node* newNode)
   blob->size += 1;
 }
 
-void addData(BlobLL* blob, LineBlob* data)
+void addData(BlobLL* blob, void* data)
 {
   Node* newNode = malloc(sizeof(Node));
   newNode->data = data;
   add(blob, newNode);
 }
 
-void addHeadData(BlobLL* blob, LineBlob* data)
+void addHeadData(BlobLL* blob, void* data)
 {
   Node* newNode = malloc(sizeof(Node));
   newNode->data = data;
@@ -129,6 +129,7 @@ void mergeLinkedLists(BlobLL* blob1, BlobLL* blob2)
   Node* blob2Head = blob2->head;
   blob1->tail->next = blob2Head;
   blob2Head->prev = blob1->tail;
+  blob1->tail = blob2->tail;
   blob1->color[0] = (blob1->color[0] + blob2->color[0])/2;
   blob1->color[1] = (blob1->color[1] + blob2->color[1])/2;
   blob1->color[2] = (blob1->color[2] + blob2->color[2])/2;

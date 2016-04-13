@@ -23,19 +23,57 @@ void AddLineBlobToArray(LineBlob** lbArray, LineBlob* lbp,
   lbArray[*size] = lbp;
 }
 
- void FindBlobsInImage(BlobPool* pool, struct Image* img)
+ void FindBlobsInImage(BlobPool* pool, struct Image* img, double tol)
  {
    int i,j;
    byte color[3];
+   BlobLL* oldRow = malloc(sizeof(BlobLL));
+   oldRow->head = NULL;
+   oldRow->tail = NULL;
+   oldRow->color = NULL;
+   oldRow->size = 0;
+
+   BlobLL* thisRow = malloc(sizeof(BlobLL));
+   thisRow->head = NULL;
+   thisRow->tail = NULL;
+   thisRow->color = NULL;
+   thisRow->size = 0;
+
    for(i=0;i<img->NofR;i++)
    {
-     color[0] = img->red[i*img->NofR];
-     color[1] = img->green[i*img->NofR];
-     color[2] = img->blue[i*img->NofR];
+
+     LineBlob* newLB = malloc(sizeof(LineBlob));
+     newLB->startIndex = 0;
+     newLB->row = i;
+     newLB->averages = malloc(sizeof(byte)*3);
+
+     // starting color to compare othLier colors too
+     newLB->averages[0] = img->red[i*img->NofR];
+     newLB->averages[1] = img->green[i*img->NofR];
+     newLB->averages[2] = img->blue[i*img->NofR];
 
      for(j=0;img->NofC;j++)
      {
        int index = i*img->NofR + j;
+       // comparing this color to "color" above
+       byte nextColor[3];
+       nextColor[0] = img->red[i*img->NofR];
+       nextColor[1] = img->red[i*img->NofR];
+       nextColor[2] = img->red[i*img->NofR];
+       double rad = threeVarRadius(newLB->averages, nextColor);
+
+       // if the colors are different by more than the tolerances allowed
+       if(rad > tol)
+       {
+         newLB->endIndex = j-1;
+         Node* newLBNode = malloc(sizeof(Node));
+         newLBNode->data = newLBNode;
+         CheckAbove(oldRow, newLBNode, tol);
+         // adding a node that points to nweLBNode as data
+         // to this row
+         addData(thisRow, newLBNode);
+       }
+
      }
    }
  }
@@ -57,26 +95,43 @@ void AddBlobLLToListPool(BlobLL** blobPool, BlobLL n, int* size, int* maxSize)
 }
 
 // assume that the head of lb is this dummy
-void CheckAbove(BlobLL* rowLL, BlobLL* thisDummy, LineBlob* lb,
-                double tol)
+// i'll be slightly changing this function
+// returns false if there were no linblobs with colors similar
+// to "lb" and returns true if there were
+// if two or more line blobs have similar color but different
+// LinkedList, lists are merged and the latter lists are set to NULL
+int CheckAbove(BlobLL* rowLL,Node* lbNode, double tol)
 {
+  int LLFound = 0;
   if(rowLL->head == NULL)
-    return;
+    return LLFound;
 
   Node* curr = rowLL->head;
   while(curr != NULL)
   {
-    byte c = IsSimilarColor(curr->data, lb, tol);
-    byte a = IsAdjacent(curr->data, lb);
+    byte c = IsSimilarColor(curr->data, lbNode->data, tol);
+    byte a = IsAdjacent(curr->data, lbNode->data);
 
     if(a && c)
     {
       Node* blobNode = curr->data;
       BlobLL* llPointer = getListPointer(blobNode);
-      mergeLinkedLists(thisDummy, llPointer);
+
+      if(lbNode->list == NULL)
+      {
+        addHead(llPointer, lbNode);
+      }
+      else
+      {
+        BlobLL* oldBlobP = getListPointer(lbNode);
+        mergeLinkedLists(oldBlobP, llPointer);
+      }
+      LLFound = 1;
     }
     curr = curr->next;
   }
+
+  return LLFound;
 }
 
 byte IsSimilarColor(LineBlob* lb1, LineBlob* lb2, double tol)

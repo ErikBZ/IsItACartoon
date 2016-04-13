@@ -51,8 +51,8 @@ typedef struct Node
 // same as addLast
 void add(BlobLL* blob, struct Node* newNode);
 void addHead(BlobLL* blob, struct Node* newNode);
-void addData(BlobLL* blob, LineBlob* data);
-void addHeadData(BlobLL* blob, LineBlob* data);
+void addData(BlobLL* blob, void* data);
+void addHeadData(BlobLL* blob, void* data);
 BlobLL* getListPointer(Node* n);
 Node* getTail(BlobLL* blob);
 // add the two linked lists and free blob1
