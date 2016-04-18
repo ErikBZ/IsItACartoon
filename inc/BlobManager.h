@@ -16,6 +16,10 @@ byte IsSimilarColor(LineBlob* lb1, LineBlob* lb2, double tol);
 double threeVarRadius(byte* arr1, byte* arr2);
 void AddLineBlobToArray(struct LineBlob** lbArray, struct LineBlob* lb,
                         int* size, int* maxSize);
+// now that i have the BlobPool struct i can change this to something
+// different. I can chage blobPool, size, and maxsize into one struct
+// and be done with it. I'll need to do some testing to make sure it'll add up
+// properly though
 void AddBlobLLToListPool(BlobLL** blobPool, BlobLL n, int* size, int* maxSize);
 // adds all the nodes that contain data similar to the given LineBlob
 int CheckAbove(BlobLL* rowLL, Node* lbNode, double tol);

@@ -62,7 +62,7 @@ void printLinkedList(BlobLL* blob);
 void printBackwards(Node* n);
 void printNode(Node* n);
 void printData(LineBlob* lb);
-
+void reset(BlobLL* ll);
 // since data is void* then this will be the best thing to
 // use to create line blobs
 LineBlob* createLine(int s, int e, int r, byte* averages);

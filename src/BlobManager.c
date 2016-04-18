@@ -23,10 +23,13 @@ void AddLineBlobToArray(LineBlob** lbArray, LineBlob* lbp,
   lbArray[*size] = lbp;
 }
 
- void FindBlobsInImage(BlobPool* pool, struct Image* img, double tol)
- {
+// now i just gott test and and find that this doesn't work whatsoever
+void FindBlobsInImage(BlobPool* pool, struct Image* img, double tol)
+{
    int i,j;
    byte color[3];
+
+   // the rows don't need a color
    BlobLL* oldRow = malloc(sizeof(BlobLL));
    oldRow->head = NULL;
    oldRow->tail = NULL;
@@ -67,16 +70,37 @@ void AddLineBlobToArray(LineBlob** lbArray, LineBlob* lbp,
        {
          newLB->endIndex = j-1;
          Node* newLBNode = malloc(sizeof(Node));
-         newLBNode->data = newLBNode;
+         newLBNode->data = newLB;
          CheckAbove(oldRow, newLBNode, tol);
          // adding a node that points to nweLBNode as data
          // to this row
          addData(thisRow, newLBNode);
-       }
 
+         // mallocing a new LineBlob since the previous one is now closed
+         newLB = malloc(sizeof(LineBlob));
+         newLB->startIndex = j;
+         newLB->row = i;
+         newLB->averages[0] = nextColor[0];
+         newLB->averages[1] = nextColor[1];
+         newLB->averages[2] = nextColor[2];
+       }
      }
-   }
- }
+     // closing the final lineblob
+     newLB->endIndex = j;
+     Node* newLBNode = malloc(sizeof(Node));
+     newLBNode->data = newLB;
+     CheckAbove(oldRow, newLBNode, tol);
+     addData(thisRow, newLBNode);
+
+     // have to free oldRow then set this row to old row
+     // and malloc a new head or free everything else except the
+     // LL so that i can reuse it. I r smat
+     reset(oldRow);
+     BlobLL* temp = oldRow;
+     oldRow = thisRow;
+     thisRow = temp;
+  }
+}
 
 // BlobLL has to be a double pointer so that the real pointer
 // can be changed. now i can also free the malloc'd pointer prior
@@ -100,7 +124,7 @@ void AddBlobLLToListPool(BlobLL** blobPool, BlobLL n, int* size, int* maxSize)
 // to "lb" and returns true if there were
 // if two or more line blobs have similar color but different
 // LinkedList, lists are merged and the latter lists are set to NULL
-int CheckAbove(BlobLL* rowLL,Node* lbNode, double tol)
+int CheckAbove(BlobLL* rowLL, Node* lbNode, double tol)
 {
   int LLFound = 0;
   if(rowLL->head == NULL)
@@ -109,8 +133,11 @@ int CheckAbove(BlobLL* rowLL,Node* lbNode, double tol)
   Node* curr = rowLL->head;
   while(curr != NULL)
   {
-    byte c = IsSimilarColor(curr->data, lbNode->data, tol);
-    byte a = IsAdjacent(curr->data, lbNode->data);
+    // curr holds a node to a node, so we need a doubel data Pointer
+    // yay for nodes of nodes
+    Node* currLBNode = curr->data;
+    byte c = IsSimilarColor(currLBNode->data, lbNode->data, tol);
+    byte a = IsAdjacent(currLBNode->data, lbNode->data);
 
     if(a && c)
     {
@@ -119,7 +146,13 @@ int CheckAbove(BlobLL* rowLL,Node* lbNode, double tol)
 
       if(lbNode->list == NULL)
       {
-        addHead(llPointer, lbNode);
+        if(llPointer != NULL)
+          addHead(llPointer, lbNode);
+        else
+        {
+          llPointer = malloc(sizeof(BlobLL));
+          addHead(llPointer, lbNode);
+        }
       }
       else
       {
@@ -130,7 +163,6 @@ int CheckAbove(BlobLL* rowLL,Node* lbNode, double tol)
     }
     curr = curr->next;
   }
-
   return LLFound;
 }
 

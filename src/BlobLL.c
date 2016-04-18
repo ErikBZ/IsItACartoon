@@ -130,11 +130,15 @@ void mergeLinkedLists(BlobLL* blob1, BlobLL* blob2)
   blob1->tail->next = blob2Head;
   blob2Head->prev = blob1->tail;
   blob1->tail = blob2->tail;
+  // probably a really bad way to calculate the average of 2 averages
   blob1->color[0] = (blob1->color[0] + blob2->color[0])/2;
   blob1->color[1] = (blob1->color[1] + blob2->color[1])/2;
   blob1->color[2] = (blob1->color[2] + blob2->color[2])/2;
   blob1->size = blob2->size + blob1->size;
 
+  //freeing and reseting most things in blob2
+  // i don't know when i'm going to free blob2 though.
+  // maybe once the blobs are finshed
   blob2Head->list = NULL;
   blob2->head = NULL;
   blob2->tail = NULL;
@@ -143,6 +147,22 @@ void mergeLinkedLists(BlobLL* blob1, BlobLL* blob2)
   blob2->size = 0;
 }
 
+void reset(BlobLL* ll)
+{
+  // free everything from tail to head
+  Node* curr = ll->tail;
+  while(curr != NULL)
+  {
+    free(curr);
+    curr = curr->prev;
+  }
+  ll->tail = NULL;
+  ll->head = NULL;
+  ll->size = 0;
+  ll->color = NULL;
+}
+
+// all the printing functions are located here
 void printLinkedList(BlobLL* blob)
 {
   Node* curr = blob->head;
