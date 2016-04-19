@@ -20,7 +20,7 @@ void AddLineBlobToArray(struct LineBlob** lbArray, struct LineBlob* lb,
 // different. I can chage blobPool, size, and maxsize into one struct
 // and be done with it. I'll need to do some testing to make sure it'll add up
 // properly though
-void AddBlobLLToListPool(BlobLL** blobPool, BlobLL n, int* size, int* maxSize);
+void AddBlobLLToListPool(BlobPool* blobPool, BlobLL n);
 // adds all the nodes that contain data similar to the given LineBlob
 int CheckAbove(BlobLL* rowLL, Node* lbNode, double tol);
 byte IsAdjacent(LineBlob* lbChecking, LineBlob* curr);

@@ -21,4 +21,5 @@ int main(int argc, char** argv)
   pool.blobPool = malloc(sizeof(BlobLL)*10);
   pool.size = 0;
   pool.maxSize = 10;
+
 }

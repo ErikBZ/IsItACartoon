@@ -104,18 +104,20 @@ void FindBlobsInImage(BlobPool* pool, struct Image* img, double tol)
 
 // BlobLL has to be a double pointer so that the real pointer
 // can be changed. now i can also free the malloc'd pointer prior
-void AddBlobLLToListPool(BlobLL** blobPool, BlobLL n, int* size, int* maxSize)
+void AddBlobLLToListPool(BlobPool* blobPool, BlobLL n)
 {
-  if((*size) >= (*maxSize))
+  BlobLL* blobArray = blobPool->blobPool;
+
+  if((blobPool->size) >= (blobPool->maxSize))
   {
-    (*maxSize) = (*maxSize) * 2;
-    BlobLL* newNodePool = malloc(sizeof(BlobLL) * (*maxSize));
-    memcpy(newNodePool, *blobPool, (*size) * sizeof(BlobLL));
-    free(*blobPool);
-    *blobPool = newNodePool;
+    (blobPool->maxSize) = (blobPool->maxSize) * 2;
+    BlobLL* newNodePool = malloc(sizeof(BlobLL) * (blobPool->maxSize));
+    memcpy(newNodePool, blobArray, blobPool->size * sizeof(BlobLL));
+    free(blobArray);
+    blobPool->blobPool = newNodePool;
   }
-  (*blobPool)[*size] = n;
-  (*size) = (*size) + 1;
+  (blobPool->blobPool)[blobPool->size] = n;
+  blobPool->size = blobPool->size + 1;
 }
 
 // assume that the head of lb is this dummy
