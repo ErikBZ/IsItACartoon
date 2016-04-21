@@ -17,6 +17,8 @@ typedef struct BlobLL
   int size;
 } BlobLL;
 
+// contains all the BlobLL that were created
+// meaning that this has all the heads of the blobs of the image
 typedef struct BlobPool
 {
   struct BlobLL* blobPool;

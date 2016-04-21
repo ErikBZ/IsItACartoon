@@ -104,6 +104,7 @@ void FindBlobsInImage(BlobPool* pool, struct Image* img, double tol)
 
 // BlobLL has to be a double pointer so that the real pointer
 // can be changed. now i can also free the malloc'd pointer prior
+// woo this works just fine!
 void AddBlobLLToListPool(BlobPool* blobPool, BlobLL n)
 {
   BlobLL* blobArray = blobPool->blobPool;
@@ -143,8 +144,7 @@ int CheckAbove(BlobLL* rowLL, Node* lbNode, double tol)
 
     if(a && c)
     {
-      Node* blobNode = curr->data;
-      BlobLL* llPointer = getListPointer(blobNode);
+      BlobLL* llPointer = getListPointer(currLBNode);
 
       if(lbNode->list == NULL)
       {
