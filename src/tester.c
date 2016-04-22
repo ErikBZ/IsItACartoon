@@ -12,35 +12,25 @@
 
 int main(int argc, char** argv)
 {
-  // struct Image* img = malloc(sizeof(struct Image));
-  // char* filename = argv[1];
-  // ReadImage(filename, img);
+  if(argc != 2)
+  {
+    printf("Invalid input. Exiting\n");
+    exit(0);
+  }
 
+  // reading in the ppm file into img
+  struct Image* img = malloc(sizeof(struct Image));
+  ReadImage(argv[1], img);
+
+  // malloc and initializing the components of BlobPool
   BlobPool pool;
   pool.blobPool = malloc(sizeof(BlobLL)*2);
   pool.size = 0;
   pool.maxSize = 2;
 
-  BlobLL b1;
-  b1.size = 1;
-  BlobLL b2;
-  b2.size = 2;
-  BlobLL b3;
-  b3.size = 3;
-  BlobLL b4;
-  b4.size = 4;
+  // initializing tolerance
+  // i'll probably change it some
+  double tol = 6;
 
-  AddBlobLLToListPool(&pool, b1);
-  AddBlobLLToListPool(&pool, b2);
-  AddBlobLLToListPool(&pool, b3);
-  AddBlobLLToListPool(&pool, b4);
-
-  printf("%d\n", pool.size);
-  printf("%d\n", pool.maxSize);
-
-  int i;
-  for(i=0;i<4;i++)
-  {
-    printf("%d\n", pool.blobPool[i].size);
-  }
+  FindBlobsInImage(&pool, img, tol);
 }

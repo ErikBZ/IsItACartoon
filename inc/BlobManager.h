@@ -21,8 +21,12 @@ void AddLineBlobToArray(struct LineBlob** lbArray, struct LineBlob* lb,
 // and be done with it. I'll need to do some testing to make sure it'll add up
 // properly though
 void AddBlobLLToListPool(BlobPool* blobPool, BlobLL n);
+// main function that finds the blobs in image
+// time to test it out. RIP
+void FindBlobsInImage(BlobPool* pool, struct Image* img, double tol);
 // adds all the nodes that contain data similar to the given LineBlob
 int CheckAbove(BlobLL* rowLL, Node* lbNode, double tol);
 byte IsAdjacent(LineBlob* lbChecking, LineBlob* curr);
+
 
 #endif
