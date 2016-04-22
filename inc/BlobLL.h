@@ -56,6 +56,7 @@ void addHead(BlobLL* blob, struct Node* newNode);
 void addData(BlobLL* blob, void* data);
 void addHeadData(BlobLL* blob, void* data);
 BlobLL* getListPointer(Node* n);
+BlobLL createBlobLL(Node* n);
 Node* getTail(BlobLL* blob);
 // add the two linked lists and free blob1
 // add 1 to 2 and get rid of 1

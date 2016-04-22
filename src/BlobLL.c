@@ -60,6 +60,8 @@ void add(BlobLL* blob, Node* newNode)
     blob->head = newNode;
     blob->tail = newNode;
     newNode->list = blob;
+    newNode->prev = NULL;
+    newNode->next = NULL;
   }
   else
   {
@@ -79,13 +81,17 @@ void addHead(BlobLL* blob, Node* newNode)
     blob->head = newNode;
     blob->tail = newNode;
     newNode->list = blob;
+    newNode->prev = NULL;
+    newNode->next = NULL;
   }
   else
   {
     newNode->next = blob->head;
+    newNode->prev = NULL;
     blob->head->list = NULL;
     blob->head = newNode;
     newNode->list = blob;
+    blob->tail->next = NULL;
   }
   blob->size += 1;
 }
@@ -115,6 +121,17 @@ BlobLL* getListPointer(struct Node* n)
   // previous is null and data is null then there is no blob for some reaosn
   // dummies should be the node with previous as null AND data as null
   return curr->list;
+}
+
+BlobLL createBlobLL(Node* n)
+{
+  BlobLL blob;
+  blob.size = 0;
+  blob.head = NULL;
+  blob.tail = NULL;
+  blob.color = malloc(sizeof(byte)*3);
+  add(&blob, n);
+  return blob;
 }
 
 Node* getTail(BlobLL* blob)

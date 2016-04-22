@@ -30,7 +30,16 @@ int main(int argc, char** argv)
 
   // initializing tolerance
   // i'll probably change it some
-  double tol = 6;
+  double tol = 40;
 
   FindBlobsInImage(&pool, img, tol);
+
+  int i;
+  for(i=0;i<pool.size;i++)
+  {
+    if(pool.blobPool[i].head != NULL)
+    {
+      printf("%d\n", pool.blobPool[i].size);
+    }
+  }
 }

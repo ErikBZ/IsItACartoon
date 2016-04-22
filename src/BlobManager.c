@@ -26,79 +26,107 @@ void AddLineBlobToArray(LineBlob** lbArray, LineBlob* lbp,
 // now i just gott test and and find that this doesn't work whatsoever
 void FindBlobsInImage(BlobPool* pool, struct Image* img, double tol)
 {
-   int i,j;
-   byte color[3];
+  int i,j;
+  byte color[3];
 
-   // the rows don't need a color
-   BlobLL* oldRow = malloc(sizeof(BlobLL));
-   oldRow->head = NULL;
-   oldRow->tail = NULL;
-   oldRow->color = NULL;
-   oldRow->size = 0;
+  // the rows don't need a color
+  BlobLL* oldRow = malloc(sizeof(BlobLL));
+  oldRow->head = NULL;
+  oldRow->tail = NULL;
+  oldRow->color = NULL;
+  oldRow->size = 0;
 
-   BlobLL* thisRow = malloc(sizeof(BlobLL));
-   thisRow->head = NULL;
-   thisRow->tail = NULL;
-   thisRow->color = NULL;
-   thisRow->size = 0;
+  BlobLL* thisRow = malloc(sizeof(BlobLL));
+  thisRow->head = NULL;
+  thisRow->tail = NULL;
+  thisRow->color = NULL;
+  thisRow->size = 0;
 
-   for(i=0;i<img->NofR;i++)
-   {
+  for(i=0;i<img->NofR;i++)
+  {
+    LineBlob* newLB = malloc(sizeof(LineBlob));
+    newLB->startIndex = 0;
+    newLB->row = i;
+    newLB->averages = malloc(sizeof(byte)*3);
 
-     LineBlob* newLB = malloc(sizeof(LineBlob));
-     newLB->startIndex = 0;
-     newLB->row = i;
-     newLB->averages = malloc(sizeof(byte)*3);
+    // starting color to compare othLier colors too
+    newLB->averages[0] = img->red[i*img->NofR];
+    newLB->averages[1] = img->green[i*img->NofR];
+    newLB->averages[2] = img->blue[i*img->NofR];
 
-     // starting color to compare othLier colors too
-     newLB->averages[0] = img->red[i*img->NofR];
-     newLB->averages[1] = img->green[i*img->NofR];
-     newLB->averages[2] = img->blue[i*img->NofR];
+    for(j=0;j<img->NofC;j++)
+    {
+      int index = i*img->NofR + j;
+      // comparing this color to "color" above
+      byte nextColor[3];
+      nextColor[0] = img->red[i*img->NofR + j];
+      nextColor[1] = img->green[i*img->NofR + j];
+      nextColor[2] = img->blue[i*img->NofR + j];
+      double rad = threeVarRadius(newLB->averages, nextColor);
 
-     for(j=0;img->NofC;j++)
-     {
-       int index = i*img->NofR + j;
-       // comparing this color to "color" above
-       byte nextColor[3];
-       nextColor[0] = img->red[i*img->NofR];
-       nextColor[1] = img->red[i*img->NofR];
-       nextColor[2] = img->red[i*img->NofR];
-       double rad = threeVarRadius(newLB->averages, nextColor);
+      // printf("%lf\n", rad);
 
-       // if the colors are different by more than the tolerances allowed
-       if(rad > tol)
-       {
-         newLB->endIndex = j-1;
-         Node* newLBNode = malloc(sizeof(Node));
-         newLBNode->data = newLB;
-         CheckAbove(oldRow, newLBNode, tol);
-         // adding a node that points to nweLBNode as data
-         // to this row
-         addData(thisRow, newLBNode);
+      // if the colors are different by more than the tolerances allowed
+      if(rad > tol)
+      {
+        newLB->endIndex = j-1;
+        Node* newLBNode = malloc(sizeof(Node));
+        newLBNode->data = newLB;
+        newLBNode->prev = NULL;
+        newLBNode->next = NULL;
+        newLBNode->list = NULL;
 
-         // mallocing a new LineBlob since the previous one is now closed
-         newLB = malloc(sizeof(LineBlob));
-         newLB->startIndex = j;
-         newLB->row = i;
-         newLB->averages[0] = nextColor[0];
-         newLB->averages[1] = nextColor[1];
-         newLB->averages[2] = nextColor[2];
-       }
-     }
-     // closing the final lineblob
-     newLB->endIndex = j;
-     Node* newLBNode = malloc(sizeof(Node));
-     newLBNode->data = newLB;
-     CheckAbove(oldRow, newLBNode, tol);
-     addData(thisRow, newLBNode);
+        byte found = CheckAbove(oldRow, newLBNode, tol);
 
-     // have to free oldRow then set this row to old row
-     // and malloc a new head or free everything else except the
-     // LL so that i can reuse it. I r smat
-     reset(oldRow);
-     BlobLL* temp = oldRow;
-     oldRow = thisRow;
-     thisRow = temp;
+        if(found == 0)
+        {
+          BlobLL b = createBlobLL(newLBNode);
+          addHead(&b, newLBNode);
+          AddBlobLLToListPool(pool, b);
+        }
+        // adding a node that points to nweLBNode as data
+        // to this row
+        addData(thisRow, newLBNode);
+        // debugging, checking to see how thisRow is being created
+        // printLinkedList(thisRow);
+        // printf("\n");
+
+        // mallocing a new LineBlob since the previous one is now closed
+        newLB = malloc(sizeof(LineBlob));
+        newLB->startIndex = j;
+        newLB->row = i;
+        newLB->averages = malloc(sizeof(byte)*3);
+        newLB->averages[0] = nextColor[0];
+        newLB->averages[1] = nextColor[1];
+        newLB->averages[2] = nextColor[2];
+      }
+    }
+    // closing the final lineblob
+    newLB->endIndex = j;
+    Node* newLBNode = malloc(sizeof(Node));
+    newLBNode->data = newLB;
+    newLBNode->prev = NULL;
+    newLBNode->next = NULL;
+    newLBNode->list = NULL;
+
+    byte found = CheckAbove(oldRow, newLBNode, tol);
+    if(found == 0 )
+    {
+      BlobLL b = createBlobLL(newLBNode);
+      addHead(&b, newLBNode);
+      AddBlobLLToListPool(pool, b);
+    }
+    addData(thisRow, newLBNode);
+
+    // have to free oldRow then set this row to old row
+    // and malloc a new head or free everything else except the
+    // LL so that i can reuse it. I r smat
+    // for some reason at row 2 one of the heads has a prev adderess
+    // when it should be null
+    reset(oldRow);
+    BlobLL* temp = oldRow;
+    oldRow = thisRow;
+    thisRow = temp;
   }
 }
 
@@ -116,6 +144,13 @@ void AddBlobLLToListPool(BlobPool* blobPool, BlobLL n)
     memcpy(newNodePool, blobArray, blobPool->size * sizeof(BlobLL));
     free(blobArray);
     blobPool->blobPool = newNodePool;
+
+    int i;
+    for(i=0;i<blobPool->size;i++)
+    {
+      if((blobPool->blobPool)[i].head != NULL)
+      (blobPool->blobPool)[i].head->list = &((blobPool->blobPool)[i]);
+    }
   }
   (blobPool->blobPool)[blobPool->size] = n;
   blobPool->size = blobPool->size + 1;
@@ -149,19 +184,21 @@ int CheckAbove(BlobLL* rowLL, Node* lbNode, double tol)
       if(lbNode->list == NULL)
       {
         if(llPointer != NULL)
+        {
           addHead(llPointer, lbNode);
+          LLFound = 1;
+        }
         else
         {
-          llPointer = malloc(sizeof(BlobLL));
-          addHead(llPointer, lbNode);
+          LLFound = 0;
         }
       }
       else
       {
         BlobLL* oldBlobP = getListPointer(lbNode);
         mergeLinkedLists(oldBlobP, llPointer);
+        LLFound = 1;
       }
-      LLFound = 1;
     }
     curr = curr->next;
   }
