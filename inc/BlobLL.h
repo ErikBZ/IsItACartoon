@@ -45,7 +45,7 @@ typedef struct Node
 {
   struct Node* next;
   struct Node* prev;
-  void* data;
+  LineBlob* data;
   BlobLL* list;
 } Node;
 
@@ -53,8 +53,8 @@ typedef struct Node
 // same as addLast
 void add(BlobLL* blob, struct Node* newNode);
 void addHead(BlobLL* blob, struct Node* newNode);
-void addData(BlobLL* blob, void* data);
-void addHeadData(BlobLL* blob, void* data);
+void addData(BlobLL* blob, LineBlob* data);
+void addHeadData(BlobLL* blob, LineBlob* data);
 BlobLL* getListPointer(Node* n);
 BlobLL createBlobLL(Node* n);
 Node* getTail(BlobLL* blob);
@@ -66,7 +66,7 @@ void printBackwards(Node* n);
 void printNode(Node* n);
 void printData(LineBlob* lb);
 void reset(BlobLL* ll);
-// since data is void* then this will be the best thing to
+// since data is LineBlob* then this will be the best thing to
 // use to create line blobs
 LineBlob* createLine(int s, int e, int r, byte* averages);
 Node* createNode(int s, int e, int r, byte* averages);

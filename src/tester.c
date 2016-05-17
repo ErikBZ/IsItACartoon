@@ -28,18 +28,21 @@ int main(int argc, char** argv)
   pool.size = 0;
   pool.maxSize = 2;
 
-  // initializing tolerance
-  // i'll probably change it some
-  double tol = 40;
+  double tol = 10;
 
-  FindBlobsInImage(&pool, img, tol);
+  HeadLL* firstRow = malloc(sizeof(HeadLL));
+  firstRow = calculateRow(img, 0, firstRow, &pool, tol);
 
-  int i;
-  for(i=0;i<pool.size;i++)
+  HeadNode* curr = firstRow->head;
+  while(curr != NULL)
   {
-    if(pool.blobPool[i].head != NULL)
-    {
-      printf("%d\n", pool.blobPool[i].size);
-    }
+    LineBlob* lb = curr->data->data;
+    printf("Row: %d\n", lb->row);
+    printf("Start index: %d End index: %d\n", lb->startIndex, lb->endIndex);
+    printf("Red avg: %d Green avg: %d Blue avg: %d\n",
+            lb->averages[0], lb->averages[1], lb->averages[2]);
+    curr = curr->next;
   }
+
+  printf("Size of Linked List: %d\n", firstRow->size);
 }

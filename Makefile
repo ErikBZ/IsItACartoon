@@ -11,7 +11,8 @@ SRCS=$(SDIR)/BlobLL.c\
 $(SDIR)/ColorClamp.c\
 $(SDIR)/image.c\
 $(SDIR)/tester.c\
-$(SDIR)/BlobManager.c
+$(SDIR)/BlobManager.c\
+$(SDIR)/HeadBlobLL.c
 
 INCLUDE=$(addprefix -I,$(IDIR))
 OBJS=${SRCS:$(SDIR)/%.c=$(ODIR)/%.o}
@@ -31,4 +32,4 @@ clean:
 		rm -f $(OBJS)
 
 cleanall:
-		rm -f $(OBJS) ./bin/Lab12
+		rm -f $(OBJS) ./bin/tester

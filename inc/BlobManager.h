@@ -10,6 +10,7 @@
 #include "ColorClamp.h"
 #include "BlobLL.h"
 #include "image.h"
+#include "HeadBlobLL.h"
 
 byte IsSimilarColor(LineBlob* lb1, LineBlob* lb2, double tol);
 // things for building the Blob
@@ -25,8 +26,9 @@ void AddBlobLLToListPool(BlobPool* blobPool, BlobLL n);
 // time to test it out. RIP
 void FindBlobsInImage(BlobPool* pool, struct Image* img, double tol);
 // adds all the nodes that contain data similar to the given LineBlob
-int CheckAbove(BlobLL* rowLL, Node* lbNode, double tol);
+int CheckAbove(HeadLL* rowLL, Node* lbNode, double tol);
 byte IsAdjacent(LineBlob* lbChecking, LineBlob* curr);
-
+HeadLL* calculateRow(struct Image* img, int row, HeadLL* headLinkedList,
+                     BlobPool* blobPool, double tol);
 
 #endif

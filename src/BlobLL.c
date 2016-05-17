@@ -96,14 +96,14 @@ void addHead(BlobLL* blob, Node* newNode)
   blob->size += 1;
 }
 
-void addData(BlobLL* blob, void* data)
+void addData(BlobLL* blob, LineBlob* data)
 {
   Node* newNode = malloc(sizeof(Node));
   newNode->data = data;
   add(blob, newNode);
 }
 
-void addHeadData(BlobLL* blob, void* data)
+void addHeadData(BlobLL* blob, LineBlob* data)
 {
   Node* newNode = malloc(sizeof(Node));
   newNode->data = data;

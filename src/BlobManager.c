@@ -6,6 +6,7 @@
 #include "string.h"
 #include "ColorClamp.h"
 #include "BlobManager.h"
+#include "HeadBlobLL.h"
 
 void AddLineBlobToArray(LineBlob** lbArray, LineBlob* lbp,
                         int* size, int* maxSize)
@@ -23,24 +24,75 @@ void AddLineBlobToArray(LineBlob** lbArray, LineBlob* lbp,
   lbArray[*size] = lbp;
 }
 
+
+HeadLL* calculateRow(struct Image* img, int row, HeadLL* currLinkedList,
+                     BlobPool* blobPool, double tol)
+{
+  resetHeadLL(currLinkedList);
+
+  int i=0;
+  byte* colors = malloc(sizeof(byte)*3);
+  LineBlob* newLineBlob = malloc(sizeof(LineBlob));
+  newLineBlob->startIndex = 0;
+  newLineBlob->row = row;
+  newLineBlob->averages = malloc(sizeof(byte)*3);
+
+  int col = row * img->NofR;
+  newLineBlob->averages[0] = img->red[col];
+  newLineBlob->averages[1] = img->green[col];
+  newLineBlob->averages[2] = img->blue[col];
+
+  byte* color = malloc(sizeof(byte)*3);
+  for(i=0;i<=img->NofC;i++)
+  {
+    // calculation of average will be
+    // partialSum = (partialSum)*((n-1)/n) + x/n;
+
+    int index = col + i;
+    color[0] = img->red[index];
+    color[1] = img->green[index];
+    color[2] = img->blue[index];
+    double rad = threeVarRadius(newLineBlob->averages, color);
+
+    if(rad>tol || i==img->NofC)
+    {
+      newLineBlob->endIndex = i-1;
+      Node* lbNode = malloc(sizeof(Node));
+      lbNode->data = newLineBlob;
+      HeadNode* headNode = malloc(sizeof(HeadNode));
+      headNode->data = lbNode;
+      addHeadNode(currLinkedList, headNode);
+
+      if(i!=img->NofC)
+      {
+        newLineBlob = malloc(sizeof(LineBlob));
+        newLineBlob->startIndex = index;
+        newLineBlob->row = row;
+        newLineBlob->averages = malloc(sizeof(byte)*3);
+        newLineBlob->averages[0] = img->red[index];
+        newLineBlob->averages[1] = img->green[index];
+        newLineBlob->averages[2] = img->blue[index];
+      }
+    }
+  }
+  return currLinkedList;
+}
+
 // now i just gott test and and find that this doesn't work whatsoever
+// i'll need to recreate this later
 void FindBlobsInImage(BlobPool* pool, struct Image* img, double tol)
 {
   int i,j;
   byte color[3];
 
   // the rows don't need a color
-  BlobLL* oldRow = malloc(sizeof(BlobLL));
+  HeadLL* oldRow = malloc(sizeof(HeadLL));
   oldRow->head = NULL;
   oldRow->tail = NULL;
-  oldRow->color = NULL;
-  oldRow->size = 0;
 
-  BlobLL* thisRow = malloc(sizeof(BlobLL));
+  HeadLL* thisRow = malloc(sizeof(HeadLL));
   thisRow->head = NULL;
   thisRow->tail = NULL;
-  thisRow->color = NULL;
-  thisRow->size = 0;
 
   for(i=0;i<img->NofR;i++)
   {
@@ -86,7 +138,7 @@ void FindBlobsInImage(BlobPool* pool, struct Image* img, double tol)
         }
         // adding a node that points to nweLBNode as data
         // to this row
-        addData(thisRow, newLBNode);
+
         // debugging, checking to see how thisRow is being created
         // printLinkedList(thisRow);
         // printf("\n");
@@ -116,15 +168,15 @@ void FindBlobsInImage(BlobPool* pool, struct Image* img, double tol)
       addHead(&b, newLBNode);
       AddBlobLLToListPool(pool, b);
     }
-    addData(thisRow, newLBNode);
+    // add row to HeadNodes
 
     // have to free oldRow then set this row to old row
     // and malloc a new head or free everything else except the
     // LL so that i can reuse it. I r smat
     // for some reason at row 2 one of the heads has a prev adderess
     // when it should be null
-    reset(oldRow);
-    BlobLL* temp = oldRow;
+    resetHeadLL(oldRow);
+    HeadLL* temp = oldRow;
     oldRow = thisRow;
     thisRow = temp;
   }
@@ -162,18 +214,20 @@ void AddBlobLLToListPool(BlobPool* blobPool, BlobLL n)
 // to "lb" and returns true if there were
 // if two or more line blobs have similar color but different
 // LinkedList, lists are merged and the latter lists are set to NULL
-int CheckAbove(BlobLL* rowLL, Node* lbNode, double tol)
+int CheckAbove(HeadLL* rowLL, Node* lbNode, double tol)
 {
   int LLFound = 0;
   if(rowLL->head == NULL)
     return LLFound;
 
-  Node* curr = rowLL->head;
+  HeadNode* curr = rowLL->head;
   while(curr != NULL)
   {
     // curr holds a node to a node, so we need a doubel data Pointer
     // yay for nodes of nodes
+    // creating a new struct for HeadNodes
     Node* currLBNode = curr->data;
+
     byte c = IsSimilarColor(currLBNode->data, lbNode->data, tol);
     byte a = IsAdjacent(currLBNode->data, lbNode->data);
 
