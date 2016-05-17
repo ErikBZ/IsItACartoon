@@ -10,6 +10,22 @@
 #include "BlobLL.h"
 #include "BlobManager.h"
 
+void printHeadLL(HeadLL* linkedList)
+{
+  HeadNode* curr = linkedList->head;
+  while(curr != NULL)
+  {
+    LineBlob* lb = curr->data->data;
+    printf("Row: %d\n", lb->row);
+    printf("Start index: %d End index: %d\n", lb->startIndex, lb->endIndex);
+    printf("Red avg: %d Green avg: %d Blue avg: %d\n",
+            lb->averages[0], lb->averages[1], lb->averages[2]);
+    curr = curr->next;
+  }
+
+  printf("Size of Linked List: %d\n", linkedList->size);
+}
+
 int main(int argc, char** argv)
 {
   if(argc != 2)
@@ -31,18 +47,11 @@ int main(int argc, char** argv)
   double tol = 10;
 
   HeadLL* firstRow = malloc(sizeof(HeadLL));
-  firstRow = calculateRow(img, 0, firstRow, &pool, tol);
+  firstRow = calculateRowWithAverage(img, 0, firstRow, tol);
+  HeadLL* secondRow = malloc(sizeof(HeadLL));
+  secondRow = calculateRowWithAverage(img, 1, secondRow, tol);
 
-  HeadNode* curr = firstRow->head;
-  while(curr != NULL)
-  {
-    LineBlob* lb = curr->data->data;
-    printf("Row: %d\n", lb->row);
-    printf("Start index: %d End index: %d\n", lb->startIndex, lb->endIndex);
-    printf("Red avg: %d Green avg: %d Blue avg: %d\n",
-            lb->averages[0], lb->averages[1], lb->averages[2]);
-    curr = curr->next;
-  }
-
-  printf("Size of Linked List: %d\n", firstRow->size);
+  printHeadLL(firstRow);
+  printf("\n");
+  printHeadLL(secondRow);
 }

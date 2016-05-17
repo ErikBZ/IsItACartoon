@@ -25,54 +25,119 @@ void AddLineBlobToArray(LineBlob** lbArray, LineBlob* lbp,
 }
 
 
-HeadLL* calculateRow(struct Image* img, int row, HeadLL* currLinkedList,
-                     BlobPool* blobPool, double tol)
+HeadLL* calculateRow(struct Image* img, int row, HeadLL* currLinkedList, double tol)
 {
   resetHeadLL(currLinkedList);
 
   int i=0;
-  byte* colors = malloc(sizeof(byte)*3);
-  LineBlob* newLineBlob = malloc(sizeof(LineBlob));
-  newLineBlob->startIndex = 0;
+
+  // calculates the index where the row starts in the
+  // 1D byte array
+  int rowStartIndex = row * img->NofC;
+  byte* color = malloc(sizeof(byte)*3);
+  LineBlob* newLineBlob = NULL;
+  int index = rowStartIndex + i;
+
+  newLineBlob = malloc(sizeof(LineBlob));
+  newLineBlob->startIndex = index;
   newLineBlob->row = row;
   newLineBlob->averages = malloc(sizeof(byte)*3);
+  newLineBlob->averages[0] = img->red[index];
+  newLineBlob->averages[1] = img->green[index];
+  newLineBlob->averages[2] = img->blue[index];
 
-  int col = row * img->NofR;
-  newLineBlob->averages[0] = img->red[col];
-  newLineBlob->averages[1] = img->green[col];
-  newLineBlob->averages[2] = img->blue[col];
-
-  byte* color = malloc(sizeof(byte)*3);
   for(i=0;i<=img->NofC;i++)
   {
-    // calculation of average will be
-    // partialSum = (partialSum)*((n-1)/n) + x/n;
-
-    int index = col + i;
+    index = rowStartIndex + i;
     color[0] = img->red[index];
     color[1] = img->green[index];
     color[2] = img->blue[index];
+
+    if(newLineBlob == NULL)
+    {
+      newLineBlob = malloc(sizeof(LineBlob));
+      newLineBlob->startIndex = index-1;
+      newLineBlob->row = row;
+      newLineBlob->averages = malloc(sizeof(byte)*3);
+      newLineBlob->averages[0] = img->red[index-1];
+      newLineBlob->averages[1] = img->green[index-1];
+      newLineBlob->averages[2] = img->blue[index-1];
+    }
+
     double rad = threeVarRadius(newLineBlob->averages, color);
 
     if(rad>tol || i==img->NofC)
     {
-      newLineBlob->endIndex = i-1;
+      newLineBlob->endIndex = i + rowStartIndex-1;
       Node* lbNode = malloc(sizeof(Node));
       lbNode->data = newLineBlob;
       HeadNode* headNode = malloc(sizeof(HeadNode));
       headNode->data = lbNode;
       addHeadNode(currLinkedList, headNode);
+      newLineBlob = NULL;
+    }
+  }
+  return currLinkedList;
+}
 
-      if(i!=img->NofC)
-      {
-        newLineBlob = malloc(sizeof(LineBlob));
-        newLineBlob->startIndex = index;
-        newLineBlob->row = row;
-        newLineBlob->averages = malloc(sizeof(byte)*3);
-        newLineBlob->averages[0] = img->red[index];
-        newLineBlob->averages[1] = img->green[index];
-        newLineBlob->averages[2] = img->blue[index];
-      }
+HeadLL* calculateRowWithAverage(struct Image* img, int row, HeadLL* currLinkedList,
+                                double tol)
+{
+  resetHeadLL(currLinkedList);
+
+  int i=0;
+
+  // calculates the index where the row starts in the
+  // 1D byte array
+  int rowStartIndex = row * img->NofC;
+  byte* color = malloc(sizeof(byte)*3);
+  LineBlob* newLineBlob = NULL;
+  int index = rowStartIndex + i;
+
+  newLineBlob = malloc(sizeof(LineBlob));
+  newLineBlob->startIndex = index;
+  newLineBlob->row = row;
+  newLineBlob->averages = malloc(sizeof(byte)*3);
+  newLineBlob->averages[0] = img->red[index];
+  newLineBlob->averages[1] = img->green[index];
+  newLineBlob->averages[2] = img->blue[index];
+
+  for(i=0;i<=img->NofC;i++)
+  {
+    index = rowStartIndex + i;
+    color[0] = img->red[index];
+    color[1] = img->green[index];
+    color[2] = img->blue[index];
+
+    if(newLineBlob == NULL)
+    {
+      newLineBlob = malloc(sizeof(LineBlob));
+      newLineBlob->startIndex = index-1;
+      newLineBlob->row = row;
+      newLineBlob->averages = malloc(sizeof(byte)*3);
+      newLineBlob->averages[0] = img->red[index-1];
+      newLineBlob->averages[1] = img->green[index-1];
+      newLineBlob->averages[2] = img->blue[index-1];
+    }
+
+    double rad = threeVarRadius(newLineBlob->averages, color);
+
+    if(rad>tol || i==img->NofC)
+    {
+      newLineBlob->endIndex = i + rowStartIndex-1;
+      Node* lbNode = malloc(sizeof(Node));
+      lbNode->data = newLineBlob;
+      HeadNode* headNode = malloc(sizeof(HeadNode));
+      headNode->data = lbNode;
+      addHeadNode(currLinkedList, headNode);
+      newLineBlob = NULL;
+    }
+    else
+    {
+      int n = 1 + index - newLineBlob->startIndex;
+      newLineBlob->averages[0] = (newLineBlob->averages[0]) * ((n-1)/n) + color[0]/n;
+      newLineBlob->averages[1] = (newLineBlob->averages[1]) * ((n-1)/n) + color[1]/n;
+      newLineBlob->averages[2] = (newLineBlob->averages[2]) * ((n-1)/n) + color[2]/n;
     }
   }
   return currLinkedList;
