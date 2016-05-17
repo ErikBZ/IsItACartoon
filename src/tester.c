@@ -44,12 +44,12 @@ int main(int argc, char** argv)
   pool.size = 0;
   pool.maxSize = 2;
 
-  double tol = 10;
+  double tol = 15;
 
   HeadLL* firstRow = malloc(sizeof(HeadLL));
-  firstRow = calculateRowWithAverage(img, 0, firstRow, tol);
+  firstRow = calculateRow(img, 0, firstRow, tol);
   HeadLL* secondRow = malloc(sizeof(HeadLL));
-  secondRow = calculateRowWithAverage(img, 1, secondRow, tol);
+  secondRow = calculateRow(img, 1, secondRow, tol);
 
   printHeadLL(firstRow);
   printf("\n");

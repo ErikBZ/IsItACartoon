@@ -134,7 +134,7 @@ HeadLL* calculateRowWithAverage(struct Image* img, int row, HeadLL* currLinkedLi
     }
     else
     {
-      int n = 1 + index - newLineBlob->startIndex;
+      float n = 1 + index - newLineBlob->startIndex;
       newLineBlob->averages[0] = (newLineBlob->averages[0]) * ((n-1)/n) + color[0]/n;
       newLineBlob->averages[1] = (newLineBlob->averages[1]) * ((n-1)/n) + color[1]/n;
       newLineBlob->averages[2] = (newLineBlob->averages[2]) * ((n-1)/n) + color[2]/n;
