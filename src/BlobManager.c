@@ -143,6 +143,19 @@ HeadLL* calculateRowWithAverage(struct Image* img, int row, HeadLL* currLinkedLi
   return currLinkedList;
 }
 
+void MergeRows(HeadLL* prevRow, HeadLL* currRow, BlobPool blobPool, double tol)
+{
+  // this should only happen on the first row created
+  if(prevRow == NULL)
+  {
+    HeadNode* node = currRow->head;
+    while(node != NULL)
+    {
+      Node* lbNode = node->data;
+    }
+  }
+}
+
 // now i just gott test and and find that this doesn't work whatsoever
 // i'll need to recreate this later
 void FindBlobsInImage(BlobPool* pool, struct Image* img, double tol)
@@ -361,4 +374,22 @@ byte IsAdjacent(LineBlob* lbChecking, LineBlob* curr)
     adjacent = 1;
   }
   return adjacent;
+}
+
+// Functions to help with managing BlobPool are here
+//
+
+BlobLL* getNextEmptyBlobList(BlobPool pool)
+{
+    int emptyListIndex = pool.firstEmptyBlobList;
+    if(emptyListIndex > pool.maxSize)
+    {
+      // double array
+    }
+    else
+    {
+      // do some other stuff here
+    }
+
+    return &(pool.blobPool[emptyListIndex]);
 }

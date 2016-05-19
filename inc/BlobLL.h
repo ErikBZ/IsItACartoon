@@ -13,7 +13,9 @@ typedef struct BlobLL
 {
   struct Node* head;
   struct Node* tail;
+  byte occupied;
   int* color;
+  int nextEmptyBlobLL;
   int size;
 } BlobLL;
 
@@ -22,6 +24,7 @@ typedef struct BlobLL
 typedef struct BlobPool
 {
   struct BlobLL* blobPool;
+  int firstEmptyBlobList;
   int size;
   int maxSize;
 } BlobPool;
@@ -72,6 +75,5 @@ LineBlob* createLine(int s, int e, int r, byte* averages);
 Node* createNode(int s, int e, int r, byte* averages);
 Node* putInNode(LineBlob* lb);
 Node createDummy();
-
 // keep this at the bottom
 #endif

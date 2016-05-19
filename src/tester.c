@@ -46,12 +46,10 @@ int main(int argc, char** argv)
 
   double tol = 15;
 
-  HeadLL* firstRow = malloc(sizeof(HeadLL));
-  firstRow = calculateRow(img, 0, firstRow, tol);
-  HeadLL* secondRow = malloc(sizeof(HeadLL));
-  secondRow = calculateRow(img, 1, secondRow, tol);
+  pool.blobPool[0].size = 10;
+  pool.blobPool[1].size = 12;
 
-  printHeadLL(firstRow);
-  printf("\n");
-  printHeadLL(secondRow);
+  printf("%d\n", pool.blobPool[0].occupied);
+  printf("%d\n", pool.blobPool[1].occupied);
+  exit(0);
 }
