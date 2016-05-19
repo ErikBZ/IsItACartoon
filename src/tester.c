@@ -46,10 +46,23 @@ int main(int argc, char** argv)
 
   double tol = 15;
 
-  pool.blobPool[0].size = 10;
-  pool.blobPool[1].size = 12;
+  HeadLL* firstRow = malloc(sizeof(HeadLL));
+  firstRow = calculateRow(img, 0, firstRow, tol);
+  MergeRows(NULL, firstRow, &pool, tol);
+  HeadLL* secondRow = malloc(sizeof(HeadLL));
+  secondRow = calculateRow(img, 1, secondRow, tol);
+  MergeRows(firstRow, secondRow, &pool, tol);
 
-  printf("%d\n", pool.blobPool[0].occupied);
-  printf("%d\n", pool.blobPool[1].occupied);
+  int i;
+  for(i=0;i<pool.size;i++)
+  {
+    printf("%d\n", pool.blobPool[i].size);
+  }
+
+  printf("\n");
+  printf("%d\n", firstRow->size);
+  printf("%d\n", secondRow->size);
+  printf("%d\n", pool.size);
+
   exit(0);
 }

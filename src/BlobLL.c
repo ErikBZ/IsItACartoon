@@ -71,7 +71,7 @@ void add(BlobLL* blob, Node* newNode)
     newNode->next = NULL;
     newNode->list = NULL;
   }
-  blob->size += 1;
+  blob->size = blob->size + 1;
 }
 
 void addHead(BlobLL* blob, Node* newNode)
@@ -93,7 +93,7 @@ void addHead(BlobLL* blob, Node* newNode)
     newNode->list = blob;
     blob->tail->next = NULL;
   }
-  blob->size += 1;
+  blob->size = blob->size + 1;
 }
 
 void addData(BlobLL* blob, LineBlob* data)
@@ -161,6 +161,7 @@ void mergeLinkedLists(BlobLL* blob1, BlobLL* blob2)
   blob2->tail = NULL;
   free(blob2->color);
   blob2->color = NULL;
+  blob2->occupied = 0;
   blob2->size = 0;
 }
 

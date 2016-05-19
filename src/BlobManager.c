@@ -143,7 +143,7 @@ HeadLL* calculateRowWithAverage(struct Image* img, int row, HeadLL* currLinkedLi
   return currLinkedList;
 }
 
-void MergeRows(HeadLL* prevRow, HeadLL* currRow, BlobPool blobPool, double tol)
+void MergeRows(HeadLL* prevRow, HeadLL* currRow, BlobPool* blobPool, double tol, int NofC)
 {
   // this should only happen on the first row created
   if(prevRow == NULL)
@@ -152,6 +152,38 @@ void MergeRows(HeadLL* prevRow, HeadLL* currRow, BlobPool blobPool, double tol)
     while(node != NULL)
     {
       Node* lbNode = node->data;
+      BlobLL blobList;
+      blobList.occupied = 1;
+      blobList.size = 0;
+      blobList.color = NULL;
+      blobList.tail = NULL;
+      blobList.head = NULL;
+      addHead(&blobList, lbNode);
+      AddBlobLLToListPool(blobPool, blobList);
+
+      node = node->next;
+    }
+  }
+  else
+  {
+    HeadNode* currRowNode = currRow->head;
+    while(currRowNode != NULL)
+    {
+      int found = CheckAbove(prevRow, currRowNode->data, tol, NofC);
+      // no blobLL were found in the previous row for this node
+      if(!found)
+      {
+        BlobLL blobList;
+        blobList.occupied = 1;
+        blobList.size = 0;
+        blobList.color = NULL;
+        blobList.tail = NULL;
+        blobList.head = NULL;
+        addHead(&blobList, currRowNode->data);
+        AddBlobLLToListPool(blobPool, blobList);
+      }
+      // there is no else because CheckAbove deals with the found cases
+      currRowNode = currRowNode->next;
     }
   }
 }
@@ -206,7 +238,7 @@ void FindBlobsInImage(BlobPool* pool, struct Image* img, double tol)
         newLBNode->next = NULL;
         newLBNode->list = NULL;
 
-        byte found = CheckAbove(oldRow, newLBNode, tol);
+        byte found = CheckAbove(oldRow, newLBNode, tol, 0);
 
         if(found == 0)
         {
@@ -239,7 +271,7 @@ void FindBlobsInImage(BlobPool* pool, struct Image* img, double tol)
     newLBNode->next = NULL;
     newLBNode->list = NULL;
 
-    byte found = CheckAbove(oldRow, newLBNode, tol);
+    byte found = CheckAbove(oldRow, newLBNode, tol, 0);
     if(found == 0 )
     {
       BlobLL b = createBlobLL(newLBNode);
@@ -260,8 +292,6 @@ void FindBlobsInImage(BlobPool* pool, struct Image* img, double tol)
   }
 }
 
-// BlobLL has to be a double pointer so that the real pointer
-// can be changed. now i can also free the malloc'd pointer prior
 // woo this works just fine!
 void AddBlobLLToListPool(BlobPool* blobPool, BlobLL n)
 {
@@ -292,7 +322,7 @@ void AddBlobLLToListPool(BlobPool* blobPool, BlobLL n)
 // to "lb" and returns true if there were
 // if two or more line blobs have similar color but different
 // LinkedList, lists are merged and the latter lists are set to NULL
-int CheckAbove(HeadLL* rowLL, Node* lbNode, double tol)
+int CheckAbove(HeadLL* rowLL, Node* lbNode, double tol, int NofC)
 {
   int LLFound = 0;
   if(rowLL->head == NULL)
@@ -307,7 +337,7 @@ int CheckAbove(HeadLL* rowLL, Node* lbNode, double tol)
     Node* currLBNode = curr->data;
 
     byte c = IsSimilarColor(currLBNode->data, lbNode->data, tol);
-    byte a = IsAdjacent(currLBNode->data, lbNode->data);
+    byte a = IsAdjacent(currLBNode->data, lbNode->data, NofC);
 
     if(a && c)
     {
@@ -359,9 +389,14 @@ double threeVarRadius(byte* arr1, byte* arr2)
   return dist;
 }
 
-byte IsAdjacent(LineBlob* lbChecking, LineBlob* curr)
+byte IsAdjacent(LineBlob* lbChecking, LineBlob* curr, int NofC)
 {
   byte adjacent = 0;
+  // normalizing the indeces to positoin from its index in the array
+  int prevLbStart = lbChecking->startIndex - (lbChecking->row * NofC);
+  int prevLbNed;
+  int currLbStart;
+  int currLbNed;
 
   // checking to see if it is adjacent to the line blob above it
   if((curr->startIndex >= lbChecking->startIndex
@@ -374,22 +409,4 @@ byte IsAdjacent(LineBlob* lbChecking, LineBlob* curr)
     adjacent = 1;
   }
   return adjacent;
-}
-
-// Functions to help with managing BlobPool are here
-//
-
-BlobLL* getNextEmptyBlobList(BlobPool pool)
-{
-    int emptyListIndex = pool.firstEmptyBlobList;
-    if(emptyListIndex > pool.maxSize)
-    {
-      // double array
-    }
-    else
-    {
-      // do some other stuff here
-    }
-
-    return &(pool.blobPool[emptyListIndex]);
 }

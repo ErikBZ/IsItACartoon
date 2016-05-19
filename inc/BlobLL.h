@@ -15,7 +15,6 @@ typedef struct BlobLL
   struct Node* tail;
   byte occupied;
   int* color;
-  int nextEmptyBlobLL;
   int size;
 } BlobLL;
 

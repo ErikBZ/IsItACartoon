@@ -26,12 +26,10 @@ void AddBlobLLToListPool(BlobPool* blobPool, BlobLL n);
 // time to test it out. RIP
 void FindBlobsInImage(BlobPool* pool, struct Image* img, double tol);
 // adds all the nodes that contain data similar to the given LineBlob
-int CheckAbove(HeadLL* rowLL, Node* lbNode, double tol);
-byte IsAdjacent(LineBlob* lbChecking, LineBlob* curr);
+int CheckAbove(HeadLL* rowLL, Node* lbNode, double tol, int NofC);
+byte IsAdjacent(LineBlob* lbChecking, LineBlob* curr, int NofC);
 HeadLL* calculateRow(struct Image* img, int row, HeadLL* headLinkedList, double tol);
 HeadLL* calculateRowWithAverage(struct Image* img, int row, HeadLL* currLinkedList,
                                 double tol);
-void MergeRows(HeadLL* prevRow, HeadLL* currRow, BlobPool blobPool, double tol);
-// BlobPool functions to make getting BlobLinkedLists from the pool easier
-BlobLL* getNextEmptyBlobList(BlobPool pool);
+void MergeRows(HeadLL* prevRow, HeadLL* currRow, BlobPool* blobPool, double tol, int NofC);
 #endif
