@@ -148,9 +148,12 @@ void mergeLinkedLists(BlobLL* blob1, BlobLL* blob2)
   blob2Head->prev = blob1->tail;
   blob1->tail = blob2->tail;
   // probably a really bad way to calculate the average of 2 averages
+
+  /*
   blob1->color[0] = (blob1->color[0] + blob2->color[0])/2;
   blob1->color[1] = (blob1->color[1] + blob2->color[1])/2;
   blob1->color[2] = (blob1->color[2] + blob2->color[2])/2;
+  */
   blob1->size = blob2->size + blob1->size;
 
   //freeing and reseting most things in blob2
@@ -189,6 +192,7 @@ void printLinkedList(BlobLL* blob)
     printNode(curr);
     curr = curr->next;
   }
+  printf("\n");
 }
 
 void printBackwards(Node* n)
@@ -207,9 +211,7 @@ void printBackwards(Node* n)
 
 void printNode(Node* curr)
 {
-  printf("This pointer:%p\n", curr);
-  printf("Previous Pointer: %p\n", curr->prev);
-  printf("Next Pointer: %p\n", curr->next);
+  printData(curr->data);
 }
 
 void printData(LineBlob* lb)
@@ -219,6 +221,7 @@ void printData(LineBlob* lb)
   else
   {
       printf("LineBlob start index: %d\n", lb->startIndex);
-      printf("LineBlob end index: %d\n\n", lb->endIndex);
+      printf("LineBlob end index: %d\n", lb->endIndex);
+      printf("%d %d %d\n", lb->averages[0], lb->averages[1], lb->averages[2]);
   }
 }

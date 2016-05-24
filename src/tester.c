@@ -45,18 +45,21 @@ int main(int argc, char** argv)
   pool.maxSize = 2;
 
   double tol = 15;
+  int i;
 
   HeadLL* firstRow = malloc(sizeof(HeadLL));
   firstRow = calculateRow(img, 0, firstRow, tol);
-  MergeRows(NULL, firstRow, &pool, tol);
+  MergeRows(NULL, firstRow, &pool, tol, img->NofC);
   HeadLL* secondRow = malloc(sizeof(HeadLL));
   secondRow = calculateRow(img, 1, secondRow, tol);
-  MergeRows(firstRow, secondRow, &pool, tol);
+  MergeRows(firstRow, secondRow, &pool, tol, img->NofC);
 
-  int i;
   for(i=0;i<pool.size;i++)
   {
-    printf("%d\n", pool.blobPool[i].size);
+    if(pool.blobPool[i].occupied)
+    {
+      printLinkedList(&pool.blobPool[i]);
+    }
   }
 
   printf("\n");

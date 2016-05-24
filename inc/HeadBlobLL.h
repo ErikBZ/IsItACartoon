@@ -24,7 +24,7 @@ typedef struct HeadNode
 // add will add to the end
 void addHeadNode(HeadLL* headLinkedList, HeadNode* node);
 void addHeadNodeData(HeadLL* headLinkedList, Node* node);
-void printHeadList(HeadLL headLinkedList);
+void printHeadList(HeadLL* headLinkedList);
 void printHeadData(HeadNode* data);
 void resetHeadLL(HeadLL* headLinkedList);
 

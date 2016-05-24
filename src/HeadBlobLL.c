@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "HeadBlobLL.h"
 #include "string.h"
+#include "BlobLL.h"
 
 // TODO put stuff for HeadBlobLL
 void addHeadNode(HeadLL* headLinkedList, HeadNode* node)
@@ -27,9 +28,20 @@ void addHeadNodeData(HeadLL* headLinkedList, Node* node)
   addHeadNode(headLinkedList, headNode);
 }
 
-void printHeadList(HeadLL headLinkedList)
+void printHeadList(HeadLL* headLinkedList)
 {
+  HeadNode* curr = headLinkedList->head;
+  LineBlob* lb;
+  while(curr != NULL)
+  {
+    lb = curr->data->data;
+    printf("LineBlob:");
+    printf("\tStart: %d\n", lb->startIndex);
+    printf("\tEnd: %d\n", lb->endIndex);
 
+    curr = curr->next;
+  }
+  printf("\n");
 }
 
 void printHeadData(HeadNode* data)

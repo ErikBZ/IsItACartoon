@@ -71,6 +71,7 @@ HeadLL* calculateRow(struct Image* img, int row, HeadLL* currLinkedList, double 
       newLineBlob->endIndex = i + rowStartIndex-1;
       Node* lbNode = malloc(sizeof(Node));
       lbNode->data = newLineBlob;
+      lbNode->list = NULL;
       HeadNode* headNode = malloc(sizeof(HeadNode));
       headNode->data = lbNode;
       addHeadNode(currLinkedList, headNode);
@@ -160,7 +161,6 @@ void MergeRows(HeadLL* prevRow, HeadLL* currRow, BlobPool* blobPool, double tol,
       blobList.head = NULL;
       addHead(&blobList, lbNode);
       AddBlobLLToListPool(blobPool, blobList);
-
       node = node->next;
     }
   }
@@ -309,10 +309,14 @@ void AddBlobLLToListPool(BlobPool* blobPool, BlobLL n)
     for(i=0;i<blobPool->size;i++)
     {
       if((blobPool->blobPool)[i].head != NULL)
-      (blobPool->blobPool)[i].head->list = &((blobPool->blobPool)[i]);
+      {
+        (blobPool->blobPool)[i].head->list = &((blobPool->blobPool)[i]);
+      }
     }
   }
+
   (blobPool->blobPool)[blobPool->size] = n;
+  n.head->list = &((blobPool->blobPool)[blobPool->size]);
   blobPool->size = blobPool->size + 1;
 }
 
@@ -394,17 +398,17 @@ byte IsAdjacent(LineBlob* lbChecking, LineBlob* curr, int NofC)
   byte adjacent = 0;
   // normalizing the indeces to positoin from its index in the array
   int prevLbStart = lbChecking->startIndex - (lbChecking->row * NofC);
-  int prevLbNed;
-  int currLbStart;
-  int currLbNed;
+  int prevLbEnd = lbChecking->endIndex - (lbChecking->row * NofC);
+  int currLbStart = curr->startIndex - (curr->row * NofC);
+  int currLbEnd = curr->endIndex - (curr->row * NofC);
 
   // checking to see if it is adjacent to the line blob above it
-  if((curr->startIndex >= lbChecking->startIndex
-      && curr->startIndex <= lbChecking->endIndex) ||
-     (curr->endIndex >= lbChecking->startIndex
-      && curr->endIndex <= lbChecking->endIndex) ||
-     (curr->startIndex < lbChecking->startIndex
-      && curr->endIndex > lbChecking->endIndex))
+  if((currLbStart >= prevLbStart
+      && currLbStart <= prevLbEnd) ||
+     (currLbEnd >= prevLbStart
+      && currLbEnd <= prevLbEnd) ||
+     (currLbStart < prevLbStart
+      && currLbEnd > prevLbEnd))
   {
     adjacent = 1;
   }
