@@ -72,6 +72,8 @@ HeadLL* calculateRow(struct Image* img, int row, HeadLL* currLinkedList, double 
       Node* lbNode = malloc(sizeof(Node));
       lbNode->data = newLineBlob;
       lbNode->list = NULL;
+      lbNode->next = NULL;
+      lbNode->prev = NULL;
       HeadNode* headNode = malloc(sizeof(HeadNode));
       headNode->data = lbNode;
       addHeadNode(currLinkedList, headNode);

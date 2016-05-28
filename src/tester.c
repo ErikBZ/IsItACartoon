@@ -51,21 +51,29 @@ int main(int argc, char** argv)
   firstRow = calculateRow(img, 0, firstRow, tol);
   MergeRows(NULL, firstRow, &pool, tol, img->NofC);
   HeadLL* secondRow = malloc(sizeof(HeadLL));
-  secondRow = calculateRow(img, 1, secondRow, tol);
-  MergeRows(firstRow, secondRow, &pool, tol, img->NofC);
+  // secondRow = calculateRow(img, 1, secondRow, tol);
+  // MergeRows(firstRow, secondRow, &pool, tol, img->NofC);
+
+  for(i=1;i<14;i++)
+  {
+    secondRow = calculateRow(img, i, secondRow, tol);
+    MergeRows(firstRow, secondRow, &pool, tol, img->NofC);
+
+    // swaps the values around
+    HeadLL* temp = firstRow;
+    firstRow = secondRow;
+    secondRow = temp;
+  }
 
   for(i=0;i<pool.size;i++)
   {
     if(pool.blobPool[i].occupied)
     {
+      printf("New blob\n");
       printLinkedList(&pool.blobPool[i]);
     }
+    printf("%d\n", pool.blobPool[i].size);
   }
-
-  printf("\n");
-  printf("%d\n", firstRow->size);
-  printf("%d\n", secondRow->size);
-  printf("%d\n", pool.size);
 
   exit(0);
 }

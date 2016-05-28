@@ -86,11 +86,12 @@ void addHead(BlobLL* blob, Node* newNode)
   }
   else
   {
-    newNode->next = blob->head;
+    newNode->list = blob;
     newNode->prev = NULL;
+    newNode->next = blob->head;
+    blob->head->prev = newNode;
     blob->head->list = NULL;
     blob->head = newNode;
-    newNode->list = blob;
     blob->tail->next = NULL;
   }
   blob->size = blob->size + 1;
