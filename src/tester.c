@@ -9,6 +9,7 @@
 #include "ColorClamp.h"
 #include "BlobLL.h"
 #include "BlobManager.h"
+#include "Queue.h"
 
 void printHeadLL(HeadLL* linkedList)
 {
@@ -38,42 +39,25 @@ int main(int argc, char** argv)
   struct Image* img = malloc(sizeof(struct Image));
   ReadImage(argv[1], img);
 
-  // malloc and initializing the components of BlobPool
-  BlobPool pool;
-  pool.blobPool = malloc(sizeof(BlobLL)*2);
-  pool.size = 0;
-  pool.maxSize = 2;
-
-  double tol = 15;
+  byte* visitedArray = malloc(sizeof(int) * img->NofC * img->NofR);
   int i;
-
-  HeadLL* firstRow = malloc(sizeof(HeadLL));
-  firstRow = calculateRow(img, 0, firstRow, tol);
-  MergeRows(NULL, firstRow, &pool, tol, img->NofC);
-  HeadLL* secondRow = malloc(sizeof(HeadLL));
-  // secondRow = calculateRow(img, 1, secondRow, tol);
-  // MergeRows(firstRow, secondRow, &pool, tol, img->NofC);
-
-  for(i=1;i<14;i++)
+  for(i=0; i<img->NofC * img->NofR;i++)
   {
-    secondRow = calculateRow(img, i, secondRow, tol);
-    MergeRows(firstRow, secondRow, &pool, tol, img->NofC);
-
-    // swaps the values around
-    HeadLL* temp = firstRow;
-    firstRow = secondRow;
-    secondRow = temp;
+    visitedArray[i] = 0;
   }
+  double tol = 20;
+  Blob b1 = CalculateBlob(img, tol, visitedArray, 0);
+  printf("%d\n", b1.size);
+  printf("%d %d %d\n", b1.color[0], b1.color[1], b1.color[2]);
 
-  for(i=0;i<pool.size;i++)
+  for(i=0; i<b1.size;i++)
   {
-    if(pool.blobPool[i].occupied)
-    {
-      printf("New blob\n");
-      printLinkedList(&pool.blobPool[i]);
-    }
-    printf("%d\n", pool.blobPool[i].size);
+    printf("%d\n", b1.indeces[i]);
+    img->red[b1.indeces[i]] = 255;
+    img->green[b1.indeces[i]] = 255;
+    img->blue[b1.indeces[i]] = 255;
   }
+  WriteImage("blobbed.ppm", *img);
 
   exit(0);
 }

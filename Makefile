@@ -12,7 +12,8 @@ $(SDIR)/ColorClamp.c\
 $(SDIR)/image.c\
 $(SDIR)/tester.c\
 $(SDIR)/BlobManager.c\
-$(SDIR)/HeadBlobLL.c
+$(SDIR)/HeadBlobLL.c\
+$(SDIR)/Queue.c
 
 INCLUDE=$(addprefix -I,$(IDIR))
 OBJS=${SRCS:$(SDIR)/%.c=$(ODIR)/%.o}

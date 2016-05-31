@@ -7,7 +7,13 @@
 #include "image.h"
 #include "ColorClamp.h"
 
-#define null -1
+typedef struct Blob
+{
+  int* indeces;
+  int size;
+  int max;
+  byte* color;
+} Blob;
 
 typedef struct BlobLL
 {
@@ -74,5 +80,17 @@ LineBlob* createLine(int s, int e, int r, byte* averages);
 Node* createNode(int s, int e, int r, byte* averages);
 Node* putInNode(LineBlob* lb);
 Node createDummy();
+
+// if this works i don't need anything above
+int GetPixelUp(int i, int rows, int cols);
+int GetPixelDown(int i, int rows, int cols);
+int GetPixelLeft(int i, int rows, int cols);
+int GetPixelRight(int i, int rows, int cols);
+double geometricDistance(byte* arr1, byte* arr2);
+double geometricDistanceWithNoArrays(byte* arr1, byte red, byte green, byte blue);
+Blob CalculateBlob(struct Image* img, double tol, byte* visitedArray, int start);
+void AddDataToArray(Blob* blob, int data);
+void AverageColors(Blob* b, byte red, byte green, byte blue);
+
 // keep this at the bottom
 #endif
