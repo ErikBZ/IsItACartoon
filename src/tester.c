@@ -28,18 +28,10 @@ int main(int argc, char** argv)
     visitedArray[i] = 0;
   }
   double tol = 20;
-  Blob b1 = CalculateBlob(img, tol, visitedArray, 0);
-  printf("%d\n", b1.size);
-  printf("%d %d %d\n", b1.color[0], b1.color[1], b1.color[2]);
 
-  for(i=0; i<b1.size;i++)
-  {
-    printf("%d\n", b1.indeces[i]);
-    img->red[b1.indeces[i]] = 255;
-    img->green[b1.indeces[i]] = 255;
-    img->blue[b1.indeces[i]] = 255;
-  }
-  WriteImage("blobbed.ppm", *img);
+  int size = 0;
+  // this seems to work just fine
+  Blob* blobArr = GetAllBlobsInImage(img, tol, &size);
 
   exit(0);
 }

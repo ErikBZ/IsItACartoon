@@ -122,6 +122,32 @@ Blob CalculateBlob(struct Image* img, double tol, byte* visited, int start)
   return b;
 }
 
+// this returns the final array of blobs that contains all blobs in the image
+Blob* GetAllBlobsInImage(struct Image* img, double tol, int* size)
+{
+  byte* visitedArray = malloc(sizeof(int) * img->NofC * img->NofR);
+  *size = 0;
+  int max = 10;
+  Blob* blobs = malloc(sizeof(Blob)*max);
+
+  int i;
+  for(i=0;i<img->NofC * img->NofR;i++)
+  {
+    visitedArray[i] = 0;
+  }
+
+  for(i=0;i<img->NofC * img->NofR;i++)
+  {
+    if(!visitedArray[i])
+    {
+      Blob b = CalculateBlob(img, tol, visitedArray, i);
+      blobs = AddBlobToArray(blobs, b, size, &max);
+    }
+  }
+
+  return blobs;
+}
+
 // adds an integers to an integer array
 void AddDataToArray(Blob* blob, int data)
 {
@@ -136,6 +162,21 @@ void AddDataToArray(Blob* blob, int data)
   }
   (blob->indeces)[blob->size] = data;
   blob->size = blob->size + 1;
+}
+
+Blob* AddBlobToArray(Blob* blob, Blob b, int* sizeP, int* maxP)
+{
+  if(*sizeP >= *maxP)
+  {
+    *maxP = *maxP * 2;
+    Blob* newArr = malloc(sizeof(Blob) * *maxP);
+    memcpy(newArr, blob, *sizeP * sizeof(Blob));
+    free(blob);
+    blob = newArr;
+  }
+  blob[*sizeP] = b;
+  *sizeP = *sizeP + 1;
+  return blob;
 }
 
 void AverageColors(Blob* b, byte red, byte green, byte blue)
