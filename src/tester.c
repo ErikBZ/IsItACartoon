@@ -6,26 +6,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "image.h"
-#include "ColorClamp.h"
 #include "BlobLL.h"
-#include "BlobManager.h"
 #include "Queue.h"
-
-void printHeadLL(HeadLL* linkedList)
-{
-  HeadNode* curr = linkedList->head;
-  while(curr != NULL)
-  {
-    LineBlob* lb = curr->data->data;
-    printf("Row: %d\n", lb->row);
-    printf("Start index: %d End index: %d\n", lb->startIndex, lb->endIndex);
-    printf("Red avg: %d Green avg: %d Blue avg: %d\n",
-            lb->averages[0], lb->averages[1], lb->averages[2]);
-    curr = curr->next;
-  }
-
-  printf("Size of Linked List: %d\n", linkedList->size);
-}
 
 int main(int argc, char** argv)
 {
