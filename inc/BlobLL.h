@@ -11,6 +11,7 @@ typedef struct Blob
   int* indeces;
   int size;
   int max;
+  double radAvg;
   byte* color;
 } Blob;
 

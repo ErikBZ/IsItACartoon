@@ -8,6 +8,7 @@
 #include "image.h"
 #include "BlobLL.h"
 #include "Queue.h"
+#include "Statistics.h"
 
 int main(int argc, char** argv)
 {
@@ -32,6 +33,24 @@ int main(int argc, char** argv)
   int size = 0;
   // this seems to work just fine
   Blob* blobArr = GetAllBlobsInImage(img, tol, &size);
+
+  Stats stats;
+  stats.colorDeviationAverage = averageDeviation(img, blobArr, size);
+  stats.sigColorDeviationAverage = averageDeviationWithSig(img, blobArr, size);
+  stats.avgSizeOfBlobs = averageSizeOfBlobs(blobArr, size);
+  stats.sigAvgSizeOfBlobs = averageSizeOfBlobsWithSig(blobArr, size);
+  stats.sizeDeviation = sizeDeviation(blobArr, size);
+  stats.sigSizeDeviation = sizeDeviationWithSig(blobArr, size);
+  stats.insignBlobs = numberOfInsignificantBlobs(blobArr, size);
+
+  FILE* file = fopen("output", "wb");
+  if(file != NULL)
+  {
+    fwrite(&stats, sizeof(Stats), 1, file);
+    fclose(file);
+  }
+
+  
 
   exit(0);
 }

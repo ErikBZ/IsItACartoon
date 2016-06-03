@@ -70,6 +70,7 @@ Blob CalculateBlob(struct Image* img, double tol, byte* visited, int start)
   Blob b;
   b.size = 0;
   b.max = 10;
+  b.radAvg = 0;
   b.indeces = malloc(sizeof(int) * b.max);
   b.color = malloc(sizeof(byte)*3);
   b.color[0] = img->red[start];
@@ -89,6 +90,7 @@ Blob CalculateBlob(struct Image* img, double tol, byte* visited, int start)
     int next = dequeue(&intQueue);
     AddDataToArray(&b, next);
     AverageColors(&b, img->red[next], img->green[next], img->blue[next]);
+
     int up = GetPixelUp(next, img->NofR, img->NofC);
     int down = GetPixelDown(next, img->NofR, img->NofC);
     int left = GetPixelLeft(next, img->NofR, img->NofC);
@@ -185,4 +187,6 @@ void AverageColors(Blob* b, byte red, byte green, byte blue)
   b->color[0] = (b->color[0]) * (n-1)/n + red/n;
   b->color[1] = (b->color[1]) * (n-1)/n + green/n;
   b->color[2] = (b->color[2]) * (n-1)/n + blue/n;
+  double rad = geometricDistanceWithNoArrays(b->color, red, green, blue);
+  b->radAvg = b->radAvg * (n-1)/n + rad/n;
 }
