@@ -9,6 +9,7 @@
 
 typedef struct Stats
 {
+  char picType;
   // actually the deviation of the deviations
   // may have to change it to variance, idk i'm not a statistician
   // should have paid attention in class more woops

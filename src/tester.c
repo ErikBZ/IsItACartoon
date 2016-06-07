@@ -5,10 +5,21 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <dirent.h>
 #include "image.h"
 #include "BlobLL.h"
 #include "Queue.h"
 #include "Statistics.h"
+
+#define DATADIRSIZE 7
+
+char* createFilename(char* d, char* f)
+{
+  char *result = malloc(strlen(d) + strlen(f) + 1);
+  strcpy(result, d);
+  strcat(result, f);
+  return result;
+}
 
 int main(int argc, char** argv)
 {
@@ -18,9 +29,29 @@ int main(int argc, char** argv)
     exit(0);
   }
 
+  char** filenames = malloc(sizeof(char*) * 4);
+
+  DIR *d;
+  struct dirent *dir;
+  int index = 0;
+  d = opendir("./data");
+  if(d)
+  {
+    while((dir = readdir(d)) != NULL)
+    {
+      if(dir->d_name[0] != '.')
+      {
+        filenames[index] = createFilename(argv[1], dir->d_name);
+        printf("%s\n", filenames[index]);
+        index++;
+      }
+    }
+  }
+
+
   // reading in the ppm file into img
   struct Image* img = malloc(sizeof(struct Image));
-  ReadImage(argv[1], img);
+  ReadImage(filenames[0], img);
 
   byte* visitedArray = malloc(sizeof(int) * img->NofC * img->NofR);
   int i;
@@ -42,7 +73,7 @@ int main(int argc, char** argv)
   stats.sigAvgSizeOfBlobs = averageSizeOfBlobsWithSig(blobArr, size);
   stats.sizeDeviation = sizeDeviation(blobArr, size);
   stats.sigSizeDeviation = sizeDeviationWithSig(blobArr, size);
-  stats.percentOfLargeBlobs = percentTakenByLargeBlobs(blobArr, size, img->NofC * img->NofR); 
+  stats.percentOfLargeBlobs = percentTakenByLargeBlobs(blobArr, size, img->NofC * img->NofR);
   stats.largestBlob = findLargestBlob(blobArr, size);
   stats.insignBlobs = numberOfInsignificantBlobs(blobArr, size);
   stats.numOfBlobs = numberOfBlobs(blobArr, size);
@@ -66,5 +97,6 @@ int main(int argc, char** argv)
 
   printStats(st);
 
+  closedir(d);
   exit(0);
 }
