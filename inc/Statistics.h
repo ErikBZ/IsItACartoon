@@ -19,7 +19,11 @@ typedef struct Stats
   // deviation of average sizes
   double sizeDeviation;
   double sigSizeDeviation;
+  double largestColorDeviation;
+  double percentOfLargeBlobs;
+  int largestBlob;
   int insignBlobs;
+  int numOfBlobs;
 } Stats;
 
 // gets the deviation of a blobs color
@@ -28,8 +32,13 @@ double deviation(struct Image* img, Blob b);
 double averageSizeOfBlobs(Blob* blobs, int size);
 // gets the average std Devation of the whole image
 double averageDeviation(struct Image* img, Blob* blobs, int size);
-// gets the number of insignificant blobs IE blobs that are 1 pixel big
+// gets the largest color deviation
+double findLargestColorDeviation(struct Image* img, Blob* blobs, int size);
+
+int findLargestBlob(Blob* blobs, int size);
 int numberOfInsignificantBlobs(Blob* blobs, int size);
+// gets the number of insignificant blobs IE blobs that are 1 pixel big
+int numberOfBlobs(Blob* blobs, int size);
 // deviation of the average sizes
 double sizeDeviation(Blob* blobs, int size);
 
@@ -38,10 +47,10 @@ double sizeDeviation(Blob* blobs, int size);
 double averageSizeOfBlobsWithSig(Blob* blobs, int size);
 double averageDeviationWithSig(struct Image* img, Blob* blobs, int size);
 double sizeDeviationWithSig(Blob* blobs, int size);
+double percentTakenByLargeBlobs(Blob* blobs, int size, double imgSize);
+
+Stats findStatsOfAnImage(struct Image* img, Blob* blobs, int size);
 
 // using this for printing info
-void printStats(Stats s)
-{
-  
-}
+void printStats(Stats s);
 #endif

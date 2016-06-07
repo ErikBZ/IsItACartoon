@@ -37,11 +37,17 @@ int main(int argc, char** argv)
   Stats stats;
   stats.colorDeviationAverage = averageDeviation(img, blobArr, size);
   stats.sigColorDeviationAverage = averageDeviationWithSig(img, blobArr, size);
+  stats.largestColorDeviation = findLargestColorDeviation(img, blobArr, size);
   stats.avgSizeOfBlobs = averageSizeOfBlobs(blobArr, size);
   stats.sigAvgSizeOfBlobs = averageSizeOfBlobsWithSig(blobArr, size);
   stats.sizeDeviation = sizeDeviation(blobArr, size);
   stats.sigSizeDeviation = sizeDeviationWithSig(blobArr, size);
+  stats.percentOfLargeBlobs = percentTakenByLargeBlobs(blobArr, size, img->NofC * img->NofR); 
+  stats.largestBlob = findLargestBlob(blobArr, size);
   stats.insignBlobs = numberOfInsignificantBlobs(blobArr, size);
+  stats.numOfBlobs = numberOfBlobs(blobArr, size);
+
+  printStats(stats);
 
   FILE* file = fopen("output", "wb");
   if(file != NULL)
@@ -50,7 +56,15 @@ int main(int argc, char** argv)
     fclose(file);
   }
 
-  
+  Stats st;
+  FILE* file2 = fopen("output", "rb");
+  if(file != NULL)
+  {
+    fread(&st, sizeof(Stats), 1, file2);
+    fclose(file2);
+  }
+
+  printStats(st);
 
   exit(0);
 }

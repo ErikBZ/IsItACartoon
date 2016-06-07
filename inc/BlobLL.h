@@ -12,7 +12,7 @@ typedef struct Blob
   int size;
   int max;
   double radAvg;
-  byte* color;
+  double* color;
 } Blob;
 
 // if this works i don't need anything above
@@ -20,8 +20,8 @@ int GetPixelUp(int i, int rows, int cols);
 int GetPixelDown(int i, int rows, int cols);
 int GetPixelLeft(int i, int rows, int cols);
 int GetPixelRight(int i, int rows, int cols);
-double geometricDistance(byte* arr1, byte* arr2);
-double geometricDistanceWithNoArrays(byte* arr1, byte red, byte green, byte blue);
+double geometricDistance(double* arr1, byte* arr2);
+double geometricDistanceWithNoArrays(double* arr1, byte red, byte green, byte blue);
 Blob CalculateBlob(struct Image* img, double tol, byte* visitedArray, int start);
 void AddDataToArray(Blob* blob, int data);
 void AverageColors(Blob* b, byte red, byte green, byte blue);

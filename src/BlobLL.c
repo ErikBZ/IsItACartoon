@@ -38,7 +38,7 @@ int GetPixelRight(int i, int rows, int cols)
 }
 
 // finds the distance between two colors
-double geometricDistance(byte* arr1, byte* arr2)
+double geometricDistance(double* arr1, byte* arr2)
 {
   int red = arr1[0] - arr2[0];
   int green =  arr1[1] - arr2[1];
@@ -49,7 +49,7 @@ double geometricDistance(byte* arr1, byte* arr2)
 }
 
 // need this method because img has seperate arrays for rgb
-double geometricDistanceWithNoArrays(byte* arr1, byte red, byte blue, byte green)
+double geometricDistanceWithNoArrays(double* arr1, byte red, byte blue, byte green)
 {
   byte arr2[3] = {red, blue, green};
   return geometricDistance(arr1, arr2);
@@ -183,6 +183,8 @@ Blob* AddBlobToArray(Blob* blob, Blob b, int* sizeP, int* maxP)
 
 void AverageColors(Blob* b, byte red, byte green, byte blue)
 {
+  // average keeps going down, need to fix that
+  // its because of how ints and floats are rounded
   float n = b->size;
   b->color[0] = (b->color[0]) * (n-1)/n + red/n;
   b->color[1] = (b->color[1]) * (n-1)/n + green/n;
