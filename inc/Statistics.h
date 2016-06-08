@@ -50,7 +50,7 @@ double averageDeviationWithSig(struct Image* img, Blob* blobs, int size);
 double sizeDeviationWithSig(Blob* blobs, int size);
 double percentTakenByLargeBlobs(Blob* blobs, int size, double imgSize);
 
-Stats findStatsOfAnImage(struct Image* img, Blob* blobs, int size);
+Stats findStatsOfAnImage(struct Image* img, Blob* blobs, int size, char ts);
 
 // using this for printing info
 void printStats(Stats s);

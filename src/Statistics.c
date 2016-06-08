@@ -172,8 +172,27 @@ double percentTakenByLargeBlobs(Blob* blobs, int size, double imgSize)
   return sum/imgSize;
 }
 
+Stats findStatsOfAnImage(struct Image* img, Blob* blobs, int size, char t)
+{
+  Stats stats;
+  stats.picType = t;
+  stats.colorDeviationAverage = averageDeviation(img, blobs, size);
+  stats.sigColorDeviationAverage = averageDeviationWithSig(img, blobs, size);
+  stats.largestColorDeviation = findLargestColorDeviation(img, blobs, size);
+  stats.avgSizeOfBlobs = averageSizeOfBlobs(blobs, size);
+  stats.sigAvgSizeOfBlobs = averageSizeOfBlobsWithSig(blobs, size);
+  stats.sizeDeviation = sizeDeviation(blobs, size);
+  stats.sigSizeDeviation = sizeDeviationWithSig(blobs, size);
+  stats.percentOfLargeBlobs = percentTakenByLargeBlobs(blobs, size, img->NofC * img->NofR);
+  stats.largestBlob = findLargestBlob(blobs, size);
+  stats.insignBlobs = numberOfInsignificantBlobs(blobs, size);
+  stats.numOfBlobs = numberOfBlobs(blobs, size);
+  return stats;
+}
+
 void printStats(Stats s)
 {
+  printf("Picture Type: %c\n", s.picType);
   printf("Color Deviation Average: %lf\n", s.colorDeviationAverage);
   printf("Significant Color Deviation Average: %lf\n", s.sigColorDeviationAverage);
   printf("Largest Color Deviation: %lf\n", s.largestColorDeviation);

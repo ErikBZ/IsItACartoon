@@ -64,38 +64,32 @@ int main(int argc, char** argv)
   int size = 0;
   // this seems to work just fine
   Blob* blobArr = GetAllBlobsInImage(img, tol, &size);
+  Stats stats = findStatsOfAnImage(img, blobArr, size, 'x');
 
-  Stats stats;
-  stats.colorDeviationAverage = averageDeviation(img, blobArr, size);
-  stats.sigColorDeviationAverage = averageDeviationWithSig(img, blobArr, size);
-  stats.largestColorDeviation = findLargestColorDeviation(img, blobArr, size);
-  stats.avgSizeOfBlobs = averageSizeOfBlobs(blobArr, size);
-  stats.sigAvgSizeOfBlobs = averageSizeOfBlobsWithSig(blobArr, size);
-  stats.sizeDeviation = sizeDeviation(blobArr, size);
-  stats.sigSizeDeviation = sizeDeviationWithSig(blobArr, size);
-  stats.percentOfLargeBlobs = percentTakenByLargeBlobs(blobArr, size, img->NofC * img->NofR);
-  stats.largestBlob = findLargestBlob(blobArr, size);
-  stats.insignBlobs = numberOfInsignificantBlobs(blobArr, size);
-  stats.numOfBlobs = numberOfBlobs(blobArr, size);
+  Stats s;
+  s = stats;
+  Stats sta[2] = {s, stats};
 
-  printStats(stats);
+  printStats(sta[0]);
+  printStats(sta[1]);
 
   FILE* file = fopen("output", "wb");
   if(file != NULL)
   {
-    fwrite(&stats, sizeof(Stats), 1, file);
+    fwrite(&stats, sizeof(Stats), 2, file);
     fclose(file);
   }
 
-  Stats st;
+  Stats* st = malloc(sizeof(Stats) * 2);
   FILE* file2 = fopen("output", "rb");
-  if(file != NULL)
+  if(file2 != NULL)
   {
-    fread(&st, sizeof(Stats), 1, file2);
+    fread(st, sizeof(Stats), 1, file2);
     fclose(file2);
   }
 
-  printStats(st);
+  printStats(st[0]);
+  printStats(st[1]);
 
   closedir(d);
   exit(0);
