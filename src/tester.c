@@ -76,15 +76,24 @@ int main(int argc, char** argv)
   FILE* file = fopen("output", "wb");
   if(file != NULL)
   {
-    fwrite(&stats, sizeof(Stats), 2, file);
+    // lol was writing the wrong file. woops
+    fwrite(&sta, sizeof(Stats), 2, file);
     fclose(file);
   }
 
   Stats* st = malloc(sizeof(Stats) * 2);
   FILE* file2 = fopen("output", "rb");
+  Stats temp;
+  int j = 0;
+
   if(file2 != NULL)
   {
-    fread(st, sizeof(Stats), 1, file2);
+    // while(fread(&temp, sizeof(Stats), 1, file2)>0)
+    // {
+    //   st[j] = temp;
+    //   j++;
+    // }
+    fread(st, 176, 1, file2);
     fclose(file2);
   }
 
