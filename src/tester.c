@@ -11,7 +11,8 @@
 #include "Queue.h"
 #include "Statistics.h"
 
-#define DATADIRSIZE 7
+#define NOTVISISTED 0
+#define PICTURETYPE 7
 
 char* createFilename(char* d, char* f)
 {
@@ -19,6 +20,43 @@ char* createFilename(char* d, char* f)
   strcpy(result, d);
   strcat(result, f);
   return result;
+}
+
+Stats* getAllStats(char** files, int size, double tol)
+{
+  int i;
+  int j;
+  byte* visited;
+
+  struct Image* img;
+  Stats* stats = malloc(sizeof(Stats) * size);
+
+  for(i=0;i<size;i++)
+  {
+    // reading in the next image
+    img = malloc(sizeof(struct Image));
+    ReadImage(files[i], img);
+    // reallocing the visited array so that it matches the size
+    // of the current image, then reiniting it
+    visited = malloc(sizeof(byte) * img->NofC * img->NofR);
+    for(j=0;j<size;j++)
+    {
+      visited[j] = NOTVISISTED;
+    }
+
+    int blobSize = 0;
+    Blob* blobs = GetAllBlobsInImage(img, tol, &blobSize);
+    Stats s = findStatsOfAnImage(img, blobs, blobSize, files[i][PICTURETYPE]);
+    stats[i] = s;
+
+    printf("Image statistics calculated sucessfully\n");
+
+    free(visited);
+    free(img);
+    visited = NULL;
+    img = NULL;
+  }
+  return stats;
 }
 
 int main(int argc, char** argv)
@@ -49,56 +87,52 @@ int main(int argc, char** argv)
   }
 
 
-  // reading in the ppm file into img
-  struct Image* img = malloc(sizeof(struct Image));
-  ReadImage(filenames[0], img);
+  // // reading in the ppm file into img
+  // struct Image* img = malloc(sizeof(struct Image));
+  // ReadImage(filenames[0], img);
+  //
+  // byte* visitedArray = malloc(sizeof(int) * img->NofC * img->NofR);
+  // int i;
+  // for(i=0; i<img->NofC * img->NofR;i++)
+  // {
+  //   visitedArray[i] = 0;
+  // }
+  // double tol = 20;
+  //
+  // int size = 0;
+  // // this seems to work just fine
+  // Blob* blobArr = GetAllBlobsInImage(img, tol, &size);
+  // Stats stats = findStatsOfAnImage(img, blobArr, size, 'x');
 
-  byte* visitedArray = malloc(sizeof(int) * img->NofC * img->NofR);
-  int i;
-  for(i=0; i<img->NofC * img->NofR;i++)
-  {
-    visitedArray[i] = 0;
-  }
-  double tol = 20;
-
-  int size = 0;
-  // this seems to work just fine
-  Blob* blobArr = GetAllBlobsInImage(img, tol, &size);
-  Stats stats = findStatsOfAnImage(img, blobArr, size, 'x');
-
-  Stats s;
-  s = stats;
-  Stats sta[2] = {s, stats};
-
-  printStats(sta[0]);
-  printStats(sta[1]);
+  Stats* stats = getAllStats(filenames, index, 20.0);
 
   FILE* file = fopen("output", "wb");
   if(file != NULL)
   {
+    fwrite(&index, sizeof(int), 1, file);
     // lol was writing the wrong file. woops
-    fwrite(&sta, sizeof(Stats), 2, file);
+    fwrite(stats, sizeof(Stats), index, file);
     fclose(file);
   }
 
-  Stats* st = malloc(sizeof(Stats) * 2);
+  Stats* st = malloc(sizeof(Stats) * index);
   FILE* file2 = fopen("output", "rb");
   Stats temp;
-  int j = 0;
+  int size;
 
   if(file2 != NULL)
   {
-    // while(fread(&temp, sizeof(Stats), 1, file2)>0)
-    // {
-    //   st[j] = temp;
-    //   j++;
-    // }
-    fread(st, 176, 1, file2);
+    fread(&size, sizeof(int), 1, file2);
+    fread(st, sizeof(Stats), index, file2);
     fclose(file2);
   }
 
-  printStats(st[0]);
-  printStats(st[1]);
+  int i;
+  for(i=0;i<size;i++ )
+  {
+    printf("Hello\n");
+    printStats(st[i]);
+  }
 
   closedir(d);
   exit(0);
