@@ -59,8 +59,10 @@ Stats* getAllStats(char** files, int size, double tol)
   return stats;
 }
 
+
 int main(int argc, char** argv)
 {
+  // will find the stats and output it
   if(argc != 2)
   {
     printf("Invalid input. Exiting\n");
@@ -68,7 +70,6 @@ int main(int argc, char** argv)
   }
 
   char** filenames = malloc(sizeof(char*) * 4);
-
   DIR *d;
   struct dirent *dir;
   int index = 0;
@@ -85,24 +86,6 @@ int main(int argc, char** argv)
       }
     }
   }
-
-
-  // // reading in the ppm file into img
-  // struct Image* img = malloc(sizeof(struct Image));
-  // ReadImage(filenames[0], img);
-  //
-  // byte* visitedArray = malloc(sizeof(int) * img->NofC * img->NofR);
-  // int i;
-  // for(i=0; i<img->NofC * img->NofR;i++)
-  // {
-  //   visitedArray[i] = 0;
-  // }
-  // double tol = 20;
-  //
-  // int size = 0;
-  // // this seems to work just fine
-  // Blob* blobArr = GetAllBlobsInImage(img, tol, &size);
-  // Stats stats = findStatsOfAnImage(img, blobArr, size, 'x');
 
   Stats* stats = getAllStats(filenames, index, 20.0);
 

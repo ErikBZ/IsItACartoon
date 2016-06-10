@@ -1,6 +1,6 @@
 CC=gcc
-
 DEBUG=-g
+FINDSTATS=-D GETSTATS=1
 
 SDIR=./src
 ODIR=./obj
@@ -15,14 +15,16 @@ $(SDIR)/Statistics.c
 
 INCLUDE=$(addprefix -I,$(IDIR))
 OBJS=${SRCS:$(SDIR)/%.c=$(ODIR)/%.o}
+OBJSPHOTO=${SRCS:$(SDIR)/%.c=$(ODIR)/%.o}
 CFLAGS=$(DEBUG) $(INCLUDE)
 
-TARGET = $(BDIR)/tester
+STATS = $(BDIR)/FindImageStats
+PHOTONESS = $(BDIR)/ComputePhotoness
 
-all: $(TARGET)
+all: $(STATS)
 
-$(TARGET): $(OBJS)
-		${CC} ${CFLAGS} -o $@ $(OBJS) -lm
+$(STATS): $(OBJS)
+		${CC} ${CFLAGS} -o $@ $(OBJS) -lm ${FINDSTATS}
 
 $(OBJS): $(ODIR)/%.o : $(SDIR)/%.c
 		$(CC) $(CFLAGS) -c $< -o $@
@@ -31,4 +33,4 @@ clean:
 		rm -f $(OBJS)
 
 cleanall:
-		rm -f $(OBJS) ./bin/tester
+		rm -f $(OBJS) ./bin/FindImageStats ./bin/ComputePhotoness
