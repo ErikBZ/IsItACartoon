@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include "image.h"
 
+#define null -1
+
 typedef struct Blob
 {
   int* indeces;
@@ -14,6 +16,25 @@ typedef struct Blob
   double radAvg;
   double* color;
 } Blob;
+
+typedef struct Queue
+{
+  struct QueueNode* head;
+  struct QueueNode* tail;
+  int size;
+} Queue;
+
+typedef struct QueueNode
+{
+  struct QueueNode* next;
+  int data;
+} QueueNode;
+
+// queue stuff
+
+void enqueue(Queue* q, int data);
+int dequeue(Queue* q);
+void printQueue(Queue* q);
 
 // if this works i don't need anything above
 int GetPixelUp(int i, int rows, int cols);

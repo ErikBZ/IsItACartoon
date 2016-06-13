@@ -2,8 +2,110 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <dirent.h>
 #include "image.h"
 #include "BlobLL.h"
+
+#define NOTVISISTED 0
+#define PICTURETYPE 7
+#define DIRECTORY "./data/"
+
+int main(int argc, char** argv)
+{
+  char** filenames = malloc(sizeof(char*) * 4);
+  DIR *d;
+  struct dirent *dir;
+  int index = 0;
+  d = opendir(DIRECTORY);
+  if(d)
+  {
+    while((dir = readdir(d)) != NULL)
+    {
+      if(dir->d_name[0] != '.')
+      {
+        char* name = createFilename(DIRECTORY, dir->d_name);
+        if(isPPMImage(name))
+        {
+          filenames[index] = name;
+          printf("%s\n", filenames[index]);
+          index++;
+        }
+        else
+        {
+          fprintf(stderr, "%s is not a PPM image and will be skipped\n", name);
+        }
+      }
+    }
+  }
+
+  Stats* stats = getAllStats(filenames, index, 20.0);
+
+  FILE* file = fopen("output", "wb");
+  if(file != NULL)
+  {
+    fwrite(&index, sizeof(int), 1, file);
+    // lol was writing the wrong file. woops
+    fwrite(stats, sizeof(Stats), index, file);
+    fclose(file);
+  }
+  closedir(d);
+  exit(0);
+}
+
+char* createFilename(char* d, char* f)
+{
+  char *result = malloc(strlen(d) + strlen(f) + 1);
+  strcpy(result, d);
+  strcat(result, f);
+  return result;
+}
+
+Stats* getAllStats(char** files, int size, double tol)
+{
+  int i;
+  int j;
+  byte* visited;
+
+  struct Image* img;
+  Stats* stats = malloc(sizeof(Stats) * size);
+
+  for(i=0;i<size;i++)
+  {
+    // reading in the next image
+    img = malloc(sizeof(struct Image));
+    ReadImage(files[i], img);
+    // reallocing the visited array so that it matches the size
+    // of the current image, then reiniting it
+    visited = malloc(sizeof(byte) * img->NofC * img->NofR);
+    for(j=0;j<size;j++)
+    {
+      visited[j] = NOTVISISTED;
+    }
+
+    int blobSize = 0;
+    Blob* blobs = GetAllBlobsInImage(img, tol, &blobSize);
+    Stats s = findStatsOfAnImage(img, blobs, blobSize, files[i][PICTURETYPE]);
+    stats[i] = s;
+
+    printf("Image statistics calculated sucessfully\n");
+
+    free(visited);
+    free(img);
+    visited = NULL;
+    img = NULL;
+  }
+  return stats;
+}
+
+byte isPPMImage(char* file)
+{
+  byte size = strlen(file);
+  if(file[size-4] == '.' && file[size-3] == 'p' && file[size-2] == 'p'
+     && file[size-1] == 'm')
+      return 1;
+  return 0;
+}
 
 double deviation(struct Image* img, Blob b)
 {

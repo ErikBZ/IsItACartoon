@@ -27,6 +27,11 @@ typedef struct Stats
   int numOfBlobs;
 } Stats;
 
+// stuff for main, like finding files
+char* createFilename(char* d, char * f);
+Stats* getAllStats(char** files, int size, double tol);
+byte isPPMImage(char* file);
+
 // gets the deviation of a blobs color
 double deviation(struct Image* img, Blob b);
 // gets the average size of the blobs

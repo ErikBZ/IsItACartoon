@@ -10,7 +10,6 @@ BDIR=./bin
 SRCS=$(SDIR)/BlobLL.c\
 $(SDIR)/image.c\
 $(SDIR)/tester.c\
-$(SDIR)/Queue.c\
 $(SDIR)/Statistics.c
 
 INCLUDE=$(addprefix -I,$(IDIR))
