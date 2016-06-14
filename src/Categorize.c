@@ -3,53 +3,117 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include "Statistics.h"
+
+#define MINCARTOON 0.7
+#define NUMBEROFMODS 8
+#define COLDEV 0
+#define SIGCOLDEV 1
+#define AVGSIZEOFBLOBS 2
+#define SIGAVGSIZE 3
+#define SIZEDEV 4
+#define SIGSIZEDEV 5
+#define LARGECOLDEV 6
+#define PCLARGEBLOB 7
+#define MODARRAYSIZE 10
+
+double GetTenToHundred();
+double GetHundredToTenThousand();
+double GetThousandToHundThousand();
+void printModArray(double* mods);
 
 int main(int args, char** argv)
 {
   FILE* file = fopen("output", "rb");
   int size;
   Stats* stats;
+  srand(time(NULL));
 
   if(file != NULL)
   {
     fread(&size, sizeof(int), 1, file);
-    printf("%d\n", size);
     stats = malloc(sizeof(Stats) * size);
     fread(stats, sizeof(Stats), size, file);
   }
-
-  double colDevMod = 0.01;
-  double sigColDevMod = 0.01;
-  double avgSizeMod = 0.001;
-  double sigAvgSizeMod = 0.001;
-  double sizeDevMod = 0.0001;
-  double sigSizeDevMod = 0.0001;
-  double largeColDevMod = 0.001;
-  double percentSizeMod = 0.01;
-
-  double* dub = malloc(sizeof(double) * size);
-  int i;
-  for(i=0;i<size;i++)
+  else
   {
-    Stats s = stats[i];
-    dub[i] = 0;
-    dub[i] += colDevMod * s.colorDeviationAverage;
-    dub[i] += sigColDevMod * s.sigColorDeviationAverage;
-    dub[i] += avgSizeMod * s.avgSizeOfBlobs;
-    dub[i] += sigAvgSizeMod * s.sigAvgSizeOfBlobs;
-    dub[i] += sizeDevMod * s.sizeDeviation;
-    dub[i] += sigSizeDevMod * s.sigSizeDeviation;
-    dub[i] += largeColDevMod * s.largestColorDeviation;
-    dub[i] += percentSizeMod * s.percentOfLargeBlobs;
+    fprintf(stderr, "OUTPUT FILE MOST LIKELY MISSING. RUN CalcStats\n");
+    exit(1);
   }
 
-  for(i=0;i<size;i++)
+  double** modifications = malloc(sizeof(double*) * MODARRAYSIZE);
+
+  int i;
+  int j;
+
+  for(i=0;i<MODARRAYSIZE;i++)
   {
-    printStats(stats[i]);
-    printf("%f\n", dub[i]);
+    modifications[i] = malloc(sizeof(double) * NUMBEROFMODS);
+    modifications[i][COLDEV] = GetTenToHundred();            // colorDeviationAverage
+    modifications[i][SIGCOLDEV] = GetTenToHundred();            // sigColorDeviationAverage
+    modifications[i][AVGSIZEOFBLOBS] = GetHundredToTenThousand();    // avgSizeOfBlobss
+    modifications[i][SIGAVGSIZE] = GetHundredToTenThousand();    // sigAvgSizeOfBlobs
+    modifications[i][SIZEDEV] = GetThousandToHundThousand();  // sizeDeviation
+    modifications[i][SIGSIZEDEV] = GetThousandToHundThousand();  // sigSizeDeviation
+    modifications[i][LARGECOLDEV] = GetHundredToTenThousand();    // largestColorDeviation
+    modifications[i][PCLARGEBLOB] = GetTenToHundred();            // percentOfLargeBlobs
+  }
+
+  double** probability = malloc(sizeof(double*) * MODARRAYSIZE);
+  for(i=0;i<MODARRAYSIZE;i++)
+  {
+    probability[i] = malloc(sizeof(double) * size);
+    // calculating the probablity that stats[i] is a photo/cartoon
+    for(j=0;j<size;j++)
+    {
+      Stats s = stats[j];
+      probability[i][j] = 0;
+      probability[i][j] += modifications[i][COLDEV] * s.colorDeviationAverage;
+      probability[i][j] += modifications[i][SIGCOLDEV] * s.sigColorDeviationAverage;
+      probability[i][j] += modifications[i][AVGSIZEOFBLOBS] * s.avgSizeOfBlobs;
+      probability[i][j] += modifications[i][SIGAVGSIZE] * s.sigAvgSizeOfBlobs;
+      probability[i][j] += modifications[i][SIZEDEV] * s.sizeDeviation;
+      probability[i][j] += modifications[i][SIGSIZEDEV] * s.sigSizeDeviation;
+      probability[i][j] += modifications[i][LARGECOLDEV] * s.largestColorDeviation;
+      probability[i][j] += modifications[i][PCLARGEBLOB] * s.percentOfLargeBlobs;
+
+      printf("%s    %f\n", s.name, probability[i][j]);
+    }
+    printf("\n");
   }
 
   fclose(file);
   exit(0);
+}
+
+void printModArray(double* mods)
+{
+  printf("Color dev mod: %f\n", mods[COLDEV]);
+  printf("Sig color dev mod: %f\n", mods[SIGCOLDEV]);
+  printf("Avg size of blobs: %f\n", mods[AVGSIZEOFBLOBS]);
+  printf("Sig avg size of blobs: %f\n", mods[SIGAVGSIZE]);
+  printf("Size deviation: %f\n", mods[SIZEDEV]);
+  printf("Sig size deviation: %f\n", mods[SIGSIZEDEV]);
+  printf("Largest col dev: %f\n", mods[LARGECOLDEV]);
+  printf("Percent large blob: %f\n", mods[PCLARGEBLOB]);
+  printf("\n");
+}
+
+double GetTenToHundred()
+{
+  double r = rand()%100;
+  return r/1000;
+}
+
+double GetHundredToTenThousand()
+{
+  double r = rand()%100;
+  return r/100000;
+}
+
+double GetThousandToHundThousand()
+{
+  double r = rand()%100;
+  return r/1000000;
 }

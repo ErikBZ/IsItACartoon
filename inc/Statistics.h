@@ -9,6 +9,7 @@
 
 typedef struct Stats
 {
+  char name[30];
   char picType;
   // actually the deviation of the deviations
   // may have to change it to variance, idk i'm not a statistician
@@ -55,7 +56,7 @@ double averageDeviationWithSig(struct Image* img, Blob* blobs, int size);
 double sizeDeviationWithSig(Blob* blobs, int size);
 double percentTakenByLargeBlobs(Blob* blobs, int size, double imgSize);
 
-Stats findStatsOfAnImage(struct Image* img, Blob* blobs, int size, char t);
+Stats findStatsOfAnImage(struct Image* img, Blob* blobs, int size, char* t);
 
 // using this for printing info
 void printStats(Stats s);

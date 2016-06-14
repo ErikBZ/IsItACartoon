@@ -36,4 +36,4 @@ clean:
 		rm -f $(OBJS)
 
 cleanall:
-		rm -f $(OBJS) ./bin/CalcStats ./bin/Categorize
+		rm -f $(OBJS) ./bin/CalcStats ./bin/Categorize ./bin/output

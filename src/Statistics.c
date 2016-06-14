@@ -42,7 +42,7 @@ Stats* getAllStats(char** files, int size, double tol)
 
     int blobSize = 0;
     Blob* blobs = GetAllBlobsInImage(img, tol, &blobSize);
-    Stats s = findStatsOfAnImage(img, blobs, blobSize, files[i][PICTURETYPE]);
+    Stats s = findStatsOfAnImage(img, blobs, blobSize, files[i]);
     stats[i] = s;
 
     printf("Image statistics calculated sucessfully\n");
@@ -231,10 +231,12 @@ double percentTakenByLargeBlobs(Blob* blobs, int size, double imgSize)
   return sum/imgSize;
 }
 
-Stats findStatsOfAnImage(struct Image* img, Blob* blobs, int size, char t)
+Stats findStatsOfAnImage(struct Image* img, Blob* blobs, int size, char* t)
 {
   Stats stats;
-  stats.picType = t;
+  memset(stats.name, 0, 30);
+  strcpy(stats.name, t);
+  stats.picType = t[PICTURETYPE];
   stats.colorDeviationAverage = averageDeviation(img, blobs, size);
   stats.sigColorDeviationAverage = averageDeviationWithSig(img, blobs, size);
   stats.largestColorDeviation = findLargestColorDeviation(img, blobs, size);
@@ -251,6 +253,7 @@ Stats findStatsOfAnImage(struct Image* img, Blob* blobs, int size, char t)
 
 void printStats(Stats s)
 {
+  printf("%s\n", s.name);
   printf("Picture Type: %c\n", s.picType);
   printf("Color Deviation Average: %lf\n", s.colorDeviationAverage);
   printf("Significant Color Deviation Average: %lf\n", s.sigColorDeviationAverage);
