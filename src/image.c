@@ -21,7 +21,7 @@ void PGMtoPPM(struct Image *Img)
   for (i=0; i<Img->NofR*Img->NofC; i++)
     {
       Img->red[i] = Img->gray[i];
-      Img->green[i] = Img->gray[i]; 
+      Img->green[i] = Img->gray[i];
       Img->blue[i] = Img->gray[i];
     }
   free(Img->gray);
@@ -40,14 +40,14 @@ void ReadImage(char *name, struct Image *Img)
   if ((fp = fopen(name, "rb")) == NULL) {
     fprintf(stderr,"Can't open input file %s\n",name);
     exit(1);
-  } 
-  label1 : 
+  }
+  label1 :
     if (fgets(s, 80, fp)==NULL)
       {
 	fprintf(stderr,"<EOF> character found in input file %s\n", name);
 	exit(1);
       }
-    
+
   if (strcmp("P2\n",s)==0) filetype = 2;
   else if (strcmp("P3\n",s)==0) filetype = 3;
   else if (strcmp("P5\n",s)==0) filetype = 5;
@@ -103,7 +103,7 @@ void ReadImage(char *name, struct Image *Img)
     in = (byte *)malloc(sizeof(byte)*Img->NofC);
     for (i=0; i<Img->NofR; i++) {
       j = fread((void *)in,sizeof(byte),Img->NofC,fp);
-      if (j < Img->NofC) 
+      if (j < Img->NofC)
        {  fprintf(stderr,
               "Error: input file %s contains only %1d objects (< %1d)\n",
                name,i*Img->NofC+j,Img->NofC*Img->NofR);
@@ -115,14 +115,18 @@ void ReadImage(char *name, struct Image *Img)
     break;
   case 6:   // P6 - raw file, color image
     Img->iscolor = 1;
-    if (Img->red == NULL) Img->red = (byte *)malloc(sizeof(byte)*Img->NofC*Img->NofR);
-    if (Img->green == NULL) Img->green = (byte *)malloc(sizeof(byte)*Img->NofC*Img->NofR);
-    if (Img->blue == NULL) Img->blue = (byte *)malloc(sizeof(byte)*Img->NofC*Img->NofR);
+    if (Img->red == NULL)
+      Img->red = malloc(sizeof(byte)*Img->NofC*Img->NofR);
+    if (Img->green == NULL)
+      Img->green = malloc(sizeof(byte)*Img->NofC*Img->NofR);
+    if (Img->blue == NULL)
+      Img->blue = malloc(sizeof(byte)*Img->NofC*Img->NofR);
+
     k = 0;
     in = (byte *)malloc(sizeof(byte)*Img->NofC*3);;
     for (i=0; i<Img->NofR; i++) {
       j = fread((void *)in,sizeof(byte),Img->NofC*3,fp);
-      if (j < (Img->NofC*3)) 
+      if (j < (Img->NofC*3))
        {  fprintf(stderr,
               "Error: input file %s contains only %1d objects (< %1d)\n",
                name,i*Img->NofC+(j+1)/3,Img->NofC*Img->NofR);
@@ -153,7 +157,7 @@ void ReadBinaryFile(char *name, struct Buffer *b)
   if ((fp = fopen(name, "rb")) == NULL) {
     fprintf(stderr,"Can't open input file %s\n",name);
     exit(1);
-  } 
+  }
 
   // make space for data
   b->data = (byte *)malloc(sizeof(byte)*MIN_BUFFER_SIZE);
@@ -191,10 +195,10 @@ void WriteImage(char *file, struct Image Img)
   if ((fo = fopen(file, "wb")) == NULL) {
     fprintf(stderr,"Can't create output file \'%s\'\n",file);
     exit(1);
-  } 
+  }
   if (!Img.iscolor) {  // write P5 - raw, gray image
     out =  (byte *)malloc(sizeof(byte)*Img.NofC);;
-    fprintf(fo,"P5\n %3d %3d\n 255\n",Img.NofC,Img.NofR);  
+    fprintf(fo,"P5\n %3d %3d\n 255\n",Img.NofC,Img.NofR);
     for (i=0; i<Img.NofR; i++) {
       k = Img.NofC*i;
       for (j=0; j<Img.NofC; j++) out[j] = Img.gray[k++];
@@ -204,7 +208,7 @@ void WriteImage(char *file, struct Image Img)
   } // !iscolor
   else {  // P6 - raw, color image
     out =  (byte *)malloc(sizeof(byte)*Img.NofC*3);;
-    fprintf(fo,"P6\n %3d %3d\n 255\n",Img.NofC,Img.NofR);  
+    fprintf(fo,"P6\n %3d %3d\n 255\n",Img.NofC,Img.NofR);
     for (i=0; i<Img.NofR; i++) {
       k = Img.NofC*i;
       for (j=0; j<Img.NofC; j++) {
@@ -230,10 +234,8 @@ void WriteBinaryFile(char *name, struct Buffer b)
   if ((fo = fopen(name, "wb")) == NULL) {
     fprintf(stderr,"Can't create output file \'%s\'\n",name);
     exit(1);
-  } 
+  }
 
   fwrite(b.data, sizeof(byte), b.size, fo);
   fclose(fo);
 }
-
-

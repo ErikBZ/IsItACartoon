@@ -7,10 +7,11 @@
 #include <dirent.h>
 
 #define DIRECTORY "./data/"
+#define NUMBEROFFILES 12
 
 int main(int args, char** argv)
 {
-  char** filenames = malloc(sizeof(char*) * 4);
+  char** filenames = malloc(sizeof(char*) * NUMBEROFFILES);
   DIR *d;
   struct dirent *dir;
   int index = 0;
@@ -46,7 +47,7 @@ int main(int args, char** argv)
     fwrite(stats, sizeof(Stats), index, file);
     fclose(file);
   }
-  
+
   closedir(d);
   exit(0);
 }
