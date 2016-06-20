@@ -26,15 +26,15 @@ void ReadImage(char* name, struct Image* img)
   char buffer[256];
   int nlevels;
   byte *in;
-  
+
   printf("Reading ppm image %s\n", name);
   file = fopen(name, "rb");
   if(file == NULL)
   {
     fprintf(stderr, "Cannot read file %s. Skipping", name);
-    return; 
+    return;
   }
-  
+
   if(fgets(buffer, 80, file) == NULL)
   {
     fprintf(stderr, "<EOF> character found in file. File %s maybe corrupt, skipping\n", name);
@@ -49,7 +49,7 @@ void ReadImage(char* name, struct Image* img)
       fprintf(stderr, "No size for image. Check to make sure file %s is correct", name);
       return;
     }
-  }while(buffer[0] == '#'); 
+  }while(buffer[0] == '#');
 
   sscanf(buffer, "%d %d", &(img->NofC), &(img->NofR));
 
@@ -60,11 +60,11 @@ void ReadImage(char* name, struct Image* img)
       fprintf(stderr, "<EOF> character found in file. File %s maybe corrupt, skipping\n", name);
       return;
     }
-  }while(buffer[0] == '#'); 
+  }while(buffer[0] == '#');
   sscanf(buffer, "%d", &nlevels);
 
   // in the other image.c with jagerbomb and madcos it does not properly
-  // allocate the correct size. i'll fix that here  
+  // allocate the correct size. i'll fix that here
 
   img->isColor = 1;   // I thin i'll only be dealing with type 6 ppm
   if(img->red == NULL)
@@ -72,7 +72,7 @@ void ReadImage(char* name, struct Image* img)
   if(img->green == NULL)
     img->green = malloc(sizeof(byte) * img->NofC * img->NofR);
   if(img->blue == NULL)
-    img->blue = malloc(sizeof(byte) * img->NofC * img->NofR); 
+    img->blue = malloc(sizeof(byte) * img->NofC * img->NofR);
 
   k = 0;
   in = malloc(sizeof(byte) * img->NofC * 3);
@@ -84,7 +84,7 @@ void ReadImage(char* name, struct Image* img)
       fprintf(stderr, "Errorr: Input file does not have correct number of pixels");
       exit(1);
     }
-    
+
     for(j=0;j<img->NofC;j++)
     {
       img->red[k] = in[3*j];
@@ -92,8 +92,18 @@ void ReadImage(char* name, struct Image* img)
       img->blue[k] = in[(3*j)+2];
       k++;
     }
-  }  
+  }
   free(in);
   fclose(file);
 }
 
+
+void FreeImage(struct Image* img)
+{
+  free(img->red);
+  free(img->blue);
+  free(img->green);
+  img->red = NULL;
+  img->green = NULL;
+  img->blue = NULL;
+}

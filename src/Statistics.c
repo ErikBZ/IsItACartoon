@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <dirent.h>
-#include "image.h"
+#include "Image.h"
 #include "BlobLL.h"
 
 #define NOTVISISTED 0
@@ -35,7 +35,7 @@ Stats* getAllStats(char** files, int size, double tol)
     img->red = NULL;
     img->green = NULL;
     img->blue = NULL;
-    
+
     ReadImage(files[i], img);
     // reallocing the visited array so that it matches the size
     // of the current image, then reiniting it
@@ -53,10 +53,16 @@ Stats* getAllStats(char** files, int size, double tol)
     printf("Image statistics calculated sucessfully\n");
 
     free(visited);
+    FreeImage(img);
     free(img);
+    FreeBlobs(blobs, blobSize);
+    free(blobs);
+
     visited = NULL;
     img = NULL;
+    blobs = NULL;
   }
+
   return stats;
 }
 
@@ -207,7 +213,7 @@ double sizeDeviationWithSig(Blob* blobs, int size)
 {
   double avg = averageSizeOfBlobsWithSig(blobs, size);
   int numberOfSigBlobs = size - numberOfInsignificantBlobs(blobs, size);
-  int i;
+  int i=1;
   double sum = 0;
   for(i=0;i<size;i++)
   {
@@ -217,7 +223,8 @@ double sizeDeviationWithSig(Blob* blobs, int size)
     }
   }
   sum = sum/size;
-  return sqrt(sum);
+  double ans = sqrt(sum);
+  return ans;
 }
 
 double percentTakenByLargeBlobs(Blob* blobs, int size, double imgSize)

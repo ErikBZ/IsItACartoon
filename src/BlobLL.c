@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include "image.h"
+#include "Image.h"
 #include "BlobLL.h"
 #include "string.h"
 
@@ -119,10 +119,23 @@ Blob CalculateBlob(struct Image* img, double tol, byte* visited, int start)
   b.max = 10;
   b.radAvg = 0;
   b.indeces = malloc(sizeof(int) * b.max);
-  b.color = malloc(sizeof(byte)*3);
-  b.color[0] = img->red[start];
-  b.color[1] = img->green[start];
-  b.color[2] = img->blue[start];
+  if(b.indeces == NULL)
+  {
+    fprintf(stderr, "Malloc did not properly allocate memory for b.indeces");
+    exit(1);
+  }
+  b.color = malloc(sizeof(double)*3);
+  if(b.color != NULL)
+  {
+    b.color[0] = img->red[start];
+    b.color[1] = img->green[start];
+    b.color[2] = img->blue[start];
+  }
+  else
+  {
+    fprintf(stderr, "Malloc did not properly allocate memory for b.color");
+    exit(1);
+  }
 
   // setting up the queue
   Queue intQueue;
@@ -193,7 +206,8 @@ Blob* GetAllBlobsInImage(struct Image* img, double tol, int* size)
       blobs = AddBlobToArray(blobs, b, size, &max);
     }
   }
-
+  
+  free(visitedArray);
   return blobs;
 }
 
@@ -238,4 +252,21 @@ void AverageColors(Blob* b, byte red, byte green, byte blue)
   b->color[2] = (b->color[2]) * (n-1)/n + blue/n;
   double rad = geometricDistanceWithNoArrays(b->color, red, green, blue);
   b->radAvg = b->radAvg * (n-1)/n + rad/n;
+}
+
+void FreeBlob(Blob* b)
+{
+  free(b->indeces);
+  free(b->color);
+  b->indeces = NULL;
+  b->color = NULL;
+}
+
+void FreeBlobs(Blob* b, int num)
+{
+  int i=0;
+  for(i=0;i<num;i++)
+  {
+    FreeBlob(&b[i]);
+  }
 }

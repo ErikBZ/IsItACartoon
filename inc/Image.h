@@ -16,4 +16,5 @@ struct Image
 
 void ReadImage(char* name, struct Image *img);
 void WriteImage(char *name, struct Image Img);
+void FreeImage(struct Image* img);
 #endif

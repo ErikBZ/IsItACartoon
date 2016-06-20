@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "BlobLL.h"
-#include "image.h"
+#include "Image.h"
 
 typedef struct Stats
 {

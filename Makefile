@@ -1,5 +1,5 @@
 CC=gcc
-DEBUG=-g
+DEBUG=-g -O0
 
 SDIR=./src
 ODIR=./obj

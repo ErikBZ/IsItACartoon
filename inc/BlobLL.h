@@ -4,7 +4,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "image.h"
+#include "Image.h"
 
 #define null -1
 
@@ -48,6 +48,8 @@ void AddDataToArray(Blob* blob, int data);
 void AverageColors(Blob* b, byte red, byte green, byte blue);
 Blob* AddBlobToArray(Blob* blob, Blob b, int* sizeP, int* maxP);
 Blob* GetAllBlobsInImage(struct Image* img, double tol, int* size);
+void FreeBlob(Blob* b);
+void FreeBlobs(Blob* b, int num);
 
 // keep this at the bottom
 #endif

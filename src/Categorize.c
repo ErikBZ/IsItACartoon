@@ -16,11 +16,12 @@
 #define SIGSIZEDEV 5
 #define LARGECOLDEV 6
 #define PCLARGEBLOB 7
-#define MODARRAYSIZE 10
+#define MODARRAYSIZE 20
 
 double GetTenToHundred();
 double GetHundredToTenThousand();
 double GetThousandToHundThousand();
+double CalcFitness(double* probablity, int num, Stats* s);
 void printModArray(double* mods);
 
 int main(int args, char** argv)
@@ -77,16 +78,34 @@ int main(int args, char** argv)
       probability[i][j] += modifications[i][SIGSIZEDEV] * s.sigSizeDeviation;
       probability[i][j] += modifications[i][LARGECOLDEV] * s.largestColorDeviation;
       probability[i][j] += modifications[i][PCLARGEBLOB] * s.percentOfLargeBlobs;
-
-      printf("%s    %f\n", s.name, probability[i][j]);
     }
-    printf("\n");
+  }
+
+  double* fitness = malloc(sizeof(double*) * MODARRAYSIZE);
+  for(i=0;i<MODARRAYSIZE;i++)
+  {
+    printModArray(modifications[i]);
+    fitness[i] = CalcFitness(probability[i], size, stats);
+    printf("%f\n\n", fitness[i]);
   }
 
   fclose(file);
   exit(0);
 }
 
+double CalcFitness(double* probablity, int num, Stats* s)
+{
+  int i;
+  double numCorrect = 0;
+  for(i=0;i<num;i++)
+  {
+    if(MINCARTOON > probablity[i] && s[i].picType == 'd')
+    {
+      numCorrect += 1;
+    }
+  }
+  return numCorrect/num;
+}
 void printModArray(double* mods)
 {
   printf("Color dev mod: %f\n", mods[COLDEV]);

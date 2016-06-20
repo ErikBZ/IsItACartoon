@@ -7,7 +7,7 @@
 #include <dirent.h>
 
 #define DIRECTORY "./data/"
-#define NUMBEROFFILES 14
+#define NUMBEROFFILES 1
 
 int main(int args, char** argv)
 {
@@ -16,9 +16,11 @@ int main(int args, char** argv)
   struct dirent *dir;
   int index = 0;
   d = opendir(DIRECTORY);
-  if(d)
+  int i=0;
+
+  if(d != NULL)
   {
-    while((dir = readdir(d)) != NULL)
+    while((dir = readdir(d)) != NULL && i<NUMBEROFFILES)
     {
       if(dir->d_name[0] != '.')
       {
@@ -34,6 +36,7 @@ int main(int args, char** argv)
           fprintf(stderr, "%s is not a PPM image and will be skipped\n", name);
         }
       }
+      i++;
     }
   }
 
@@ -48,6 +51,7 @@ int main(int args, char** argv)
     fclose(file);
   }
 
+  free(stats);
   closedir(d);
   exit(0);
 }
