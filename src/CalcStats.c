@@ -7,7 +7,7 @@
 #include <dirent.h>
 
 #define DIRECTORY "./data/"
-#define NUMBEROFFILES 12
+#define NUMBEROFFILES 14
 
 int main(int args, char** argv)
 {

@@ -31,6 +31,11 @@ Stats* getAllStats(char** files, int size, double tol)
   {
     // reading in the next image
     img = malloc(sizeof(struct Image));
+    img->gray = NULL;
+    img->red = NULL;
+    img->green = NULL;
+    img->blue = NULL;
+    
     ReadImage(files[i], img);
     // reallocing the visited array so that it matches the size
     // of the current image, then reiniting it

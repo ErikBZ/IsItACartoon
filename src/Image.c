@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "Image.h"
 
+/*
 int main(int args, char** argv)
 {
   if(args != 2)
@@ -16,6 +17,7 @@ int main(int args, char** argv)
   img.blue = NULL;
   ReadImage(argv[1], &img);
 }
+*/
 
 void ReadImage(char* name, struct Image* img)
 {

@@ -7,7 +7,7 @@ IDIR=./inc
 BDIR=./bin
 
 SRCS=$(SDIR)/BlobLL.c\
-$(SDIR)/image.c\
+$(SDIR)/Image.c\
 $(SDIR)/Statistics.c
 
 EXE1=$(SDIR)/CalcStats.c
