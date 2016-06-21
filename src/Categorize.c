@@ -22,6 +22,15 @@ double GetTenToHundred();
 double GetHundredToTenThousand();
 double GetThousandToHundThousand();
 double CalcFitness(double* probablity, int num, Stats* s);
+// creates a child mod array that is roughly half of one parent, half the other
+double* CreateChild(double* parent1, double* parent2);
+// creates a child that is roughly half 1 parent and half random
+double* CreateBastard(double* parent1);
+// creates a new generation;
+double** CreateNewGeneration(double** currentGen, double* fitness);
+
+void CalculateProbability(double** probability, double** modifications,
+                          Stats* stats, int statSize);
 void printModArray(double* mods);
 
 int main(int args, char** argv)
@@ -48,6 +57,7 @@ int main(int args, char** argv)
   int i;
   int j;
 
+  // the first generation
   for(i=0;i<MODARRAYSIZE;i++)
   {
     modifications[i] = malloc(sizeof(double) * NUMBEROFMODS);
@@ -65,28 +75,15 @@ int main(int args, char** argv)
   for(i=0;i<MODARRAYSIZE;i++)
   {
     probability[i] = malloc(sizeof(double) * size);
-    // calculating the probablity that stats[i] is a photo/cartoon
-    for(j=0;j<size;j++)
-    {
-      Stats s = stats[j];
-      probability[i][j] = 0;
-      probability[i][j] += modifications[i][COLDEV] * s.colorDeviationAverage;
-      probability[i][j] += modifications[i][SIGCOLDEV] * s.sigColorDeviationAverage;
-      probability[i][j] += modifications[i][AVGSIZEOFBLOBS] * s.avgSizeOfBlobs;
-      probability[i][j] += modifications[i][SIGAVGSIZE] * s.sigAvgSizeOfBlobs;
-      probability[i][j] += modifications[i][SIZEDEV] * s.sizeDeviation;
-      probability[i][j] += modifications[i][SIGSIZEDEV] * s.sigSizeDeviation;
-      probability[i][j] += modifications[i][LARGECOLDEV] * s.largestColorDeviation;
-      probability[i][j] += modifications[i][PCLARGEBLOB] * s.percentOfLargeBlobs;
-    }
   }
+
+  // calculating the probablity that stats[i] is a photo/cartoon
+  CalculateProbability(probability, modifications, stats, size);
 
   double* fitness = malloc(sizeof(double*) * MODARRAYSIZE);
   for(i=0;i<MODARRAYSIZE;i++)
   {
     printModArray(modifications[i]);
-    fitness[i] = CalcFitness(probability[i], size, stats);
-    printf("%f\n\n", fitness[i]);
   }
 
   // throwing out the trash
@@ -104,6 +101,107 @@ int main(int args, char** argv)
   free(probability);
   fclose(file);
   exit(0);
+}
+
+void CalculateProbability(double** probability, double** modifications,
+                          Stats* stats, int statSize)
+{
+  int i,j;
+  for(i=0;i<MODARRAYSIZE;i++)
+  {
+    for(j=0;j<statSize;j++)
+    {
+      Stats s = stats[j];
+      probability[i][j] = 0;
+      probability[i][j] += modifications[i][COLDEV] * s.colorDeviationAverage;
+      probability[i][j] += modifications[i][SIGCOLDEV] * s.sigColorDeviationAverage;
+      probability[i][j] += modifications[i][AVGSIZEOFBLOBS] * s.avgSizeOfBlobs;
+      probability[i][j] += modifications[i][SIGAVGSIZE] * s.sigAvgSizeOfBlobs;
+      probability[i][j] += modifications[i][SIZEDEV] * s.sizeDeviation;
+      probability[i][j] += modifications[i][SIGSIZEDEV] * s.sigSizeDeviation;
+      probability[i][j] += modifications[i][LARGECOLDEV] * s.largestColorDeviation;
+      probability[i][j] += modifications[i][PCLARGEBLOB] * s.percentOfLargeBlobs;
+    }
+  }
+}
+
+double** CreateNewGeneration(double** currentGen, double* fitness)
+{
+  double* firstBest = malloc(sizeof(double) * NUMBEROFMODS);
+  double* secondBest = malloc(sizeof(double)* NUMBEROFMODS);
+  double* child;
+  double largestFitness = 0;
+  int i;
+
+  for(i=0;i<MODARRAYSIZE;i++)
+  {
+    if(fitness[i] > largestFitness)
+    {
+      memcpy(secondBest, firstBest, sizeof(double) * NUMBEROFMODS);
+      memcpy(firstBest, currentGen[i], sizeof(double) * NUMBEROFMODS);
+      largestFitness = fitness[i];
+    }
+  }
+  // first best and second best are now set
+  // the new generation will have the first 7 be children (2 parents)
+  // the second 7 be bastards (1 parent)
+  // and the last 6 be immigrants(completely random)
+  for(i=0;i<MODARRAYSIZE;i++)
+  {
+    if(i<7)
+    {
+      child = CreateChild(firstBest, secondBest);
+      memcpy(currentGen[i], child, sizeof(double) * NUMBEROFMODS);
+      free(child);
+      child = NULL;
+    }
+    else if(i<14)
+    {
+      child = CreateBastard(firstBest);
+      memcpy(currentGen[i], child, sizeof(double) * NUMBEROFMODS);
+      free(child);
+      child = NULL;
+    }
+  }
+}
+
+double* CreateChild(double* parent1, double* parent2)
+{
+  int i=0;
+  int passdown = rand()%2;
+  double* child = malloc(sizeof(double) * NUMBEROFMODS);
+  for(i=0;i<NUMBEROFMODS;i++)
+  {
+    if(passdown)
+    {
+      child[i] = parent1[i];
+    }
+    else
+    {
+      child[i] = parent2[i];
+    }
+  }
+  return child;
+}
+
+double* CreateBastard(double* parent1)
+{
+  int i=0;
+  int passdown = rand()%2;
+  double* child = malloc(sizeof(double) * NUMBEROFMODS);
+  for(i=0;i<NUMBEROFMODS;i++)
+  {
+    if(passdown)
+      child[i] = parent1[i];
+    // equal to coldev, SIGCOLDEV, PCLARGEBLOB
+    else if(i == COLDEV || i==SIGCOLDEV || i==PCLARGEBLOB)
+      child[i] = GetTenToHundred();
+    else if(i==AVGSIZEOFBLOBS || i== SIGAVGSIZE || i==LARGECOLDEV)
+      child[i] = GetHundredToTenThousand();
+    else
+      child[i] = GetThousandToHundThousand();
+  }
+  return child;
 }
 
 double CalcFitness(double* probablity, int num, Stats* s)
