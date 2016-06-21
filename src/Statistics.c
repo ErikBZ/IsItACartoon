@@ -219,7 +219,10 @@ double sizeDeviationWithSig(Blob* blobs, int size)
   {
     if(blobs[i].size != 1)
     {
-      sum += (blobs[i].size - avg) * (blobs[i].size - avg) ;
+      // valgrind error. some indeces in the blobs array aren't initialized
+      // but that's fine, since they won't be used in the calculations since all
+      // uninitialized blobs are at indeces > size
+      sum += (blobs[i].size - avg) * (blobs[i].size - avg);
     }
   }
   sum = sum/size;

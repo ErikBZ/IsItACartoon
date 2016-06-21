@@ -7,7 +7,7 @@
 #include <dirent.h>
 
 #define DIRECTORY "./data/"
-#define NUMBEROFFILES 1
+#define NUMBEROFFILES 20
 
 int main(int args, char** argv)
 {
@@ -27,7 +27,8 @@ int main(int args, char** argv)
         char* name = createFilename(DIRECTORY, dir->d_name);
         if(isPPMImage(name))
         {
-          filenames[index] = name;
+          filenames[index] = malloc(strlen(name)+1);  // extra 1 for null terminator
+          strcpy(filenames[index], name);
           printf("%s\n", filenames[index]);
           index++;
         }
@@ -35,6 +36,8 @@ int main(int args, char** argv)
         {
           fprintf(stderr, "%s is not a PPM image and will be skipped\n", name);
         }
+        free(name);
+        name = NULL;
       }
       i++;
     }
@@ -48,10 +51,17 @@ int main(int args, char** argv)
     fwrite(&index, sizeof(int), 1, file);
     // lol was writing the wrong file. woops
     fwrite(stats, sizeof(Stats), index, file);
-    fclose(file);
+    fclose(file); // some indeces in stats aren't instantiating
   }
 
   free(stats);
+  for(i=0;i<index;i++)
+  {
+    free(filenames[i]);
+    filenames[i] = NULL;
+  }
+  free(filenames);
+  filenames = NULL;
   closedir(d);
   exit(0);
 }

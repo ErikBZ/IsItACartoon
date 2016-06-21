@@ -89,6 +89,19 @@ int main(int args, char** argv)
     printf("%f\n\n", fitness[i]);
   }
 
+  // throwing out the trash
+  for(i=0;i<MODARRAYSIZE;i++)
+  {
+    free(modifications[i]);
+  }
+  free(modifications);
+  for(i=0;i<MODARRAYSIZE;i++)
+  {
+    free(probability[i]);
+  }
+  free(stats);
+  free(fitness);
+  free(probability);
   fclose(file);
   exit(0);
 }
@@ -99,7 +112,11 @@ double CalcFitness(double* probablity, int num, Stats* s)
   double numCorrect = 0;
   for(i=0;i<num;i++)
   {
-    if(MINCARTOON > probablity[i] && s[i].picType == 'd')
+    if(MINCARTOON > probablity[i] && s[i].picType == 'p')
+    {
+      numCorrect += 1;
+    }
+    else if(MINCARTOON < probablity[i] && s[i].picType == 'd')
     {
       numCorrect += 1;
     }
