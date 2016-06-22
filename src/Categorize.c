@@ -6,7 +6,8 @@
 #include <time.h>
 #include "Statistics.h"
 
-#define MINCARTOON 0.7
+// lets avoid magic numbers yay!
+#define MINCARTOON 1.2
 #define NUMBEROFMODS 8
 #define COLDEV 0
 #define SIGCOLDEV 1
@@ -17,28 +18,36 @@
 #define LARGECOLDEV 6
 #define PCLARGEBLOB 7
 #define MODARRAYSIZE 20
+#define NUMBER_OF_GENERATIONS 10000
 
 double GetTenToHundred();
 double GetHundredToTenThousand();
 double GetThousandToHundThousand();
-double CalcFitness(double* probablity, int num, Stats* s);
+double CalcFitness(double* probability, int num, Stats* s);
 // creates a child mod array that is roughly half of one parent, half the other
 double* CreateChild(double* parent1, double* parent2);
 // creates a child that is roughly half 1 parent and half random
 double* CreateBastard(double* parent1);
+// creates a child that is completely random
+double* CreateImmigrant();
 // creates a new generation;
 double** CreateNewGeneration(double** currentGen, double* fitness);
 
 void CalculateProbability(double** probability, double** modifications,
                           Stats* stats, int statSize);
 void printModArray(double* mods);
+void printIncorrectGuesses(double* probability, int num, Stats* s);
 
 int main(int args, char** argv)
 {
   FILE* file = fopen("output", "rb");
-  int size;
+  int size;       // size of the stats array
   Stats* stats;
+  int i, j, gens;
   srand(time(NULL));
+  double* fitness = malloc(sizeof(double*) * MODARRAYSIZE);
+  double** modifications = malloc(sizeof(double*) * MODARRAYSIZE);
+  double** probability = malloc(sizeof(double*) * MODARRAYSIZE);
 
   if(file != NULL)
   {
@@ -52,39 +61,40 @@ int main(int args, char** argv)
     exit(1);
   }
 
-  double** modifications = malloc(sizeof(double*) * MODARRAYSIZE);
-
-  int i;
-  int j;
-
   // the first generation
   for(i=0;i<MODARRAYSIZE;i++)
   {
     modifications[i] = malloc(sizeof(double) * NUMBEROFMODS);
-    modifications[i][COLDEV] = GetTenToHundred();            // colorDeviationAverage
-    modifications[i][SIGCOLDEV] = GetTenToHundred();            // sigColorDeviationAverage
-    modifications[i][AVGSIZEOFBLOBS] = GetHundredToTenThousand();    // avgSizeOfBlobss
-    modifications[i][SIGAVGSIZE] = GetHundredToTenThousand();    // sigAvgSizeOfBlobs
-    modifications[i][SIZEDEV] = GetThousandToHundThousand();  // sizeDeviation
-    modifications[i][SIGSIZEDEV] = GetThousandToHundThousand();  // sigSizeDeviation
-    modifications[i][LARGECOLDEV] = GetHundredToTenThousand();    // largestColorDeviation
-    modifications[i][PCLARGEBLOB] = GetTenToHundred();            // percentOfLargeBlobs
+    double* mod = CreateImmigrant();
+    memcpy(modifications[i], mod, sizeof(double) * NUMBEROFMODS);
+    free(mod);
+    mod = NULL;
   }
 
-  double** probability = malloc(sizeof(double*) * MODARRAYSIZE);
+  // mallocing probability
   for(i=0;i<MODARRAYSIZE;i++)
   {
     probability[i] = malloc(sizeof(double) * size);
   }
 
-  // calculating the probablity that stats[i] is a photo/cartoon
-  CalculateProbability(probability, modifications, stats, size);
+  while(gens < NUMBER_OF_GENERATIONS)
+  {
+    // calculating the probability that stats[i] is a photo/cartoon
+    CalculateProbability(probability, modifications, stats, size);
 
-  double* fitness = malloc(sizeof(double*) * MODARRAYSIZE);
+    for(i=0;i<MODARRAYSIZE;i++)
+    {
+      fitness[i] = CalcFitness(probability[i], size, stats);
+    }
+    CreateNewGeneration(modifications, fitness);
+    gens++;
+  }
+
   for(i=0;i<MODARRAYSIZE;i++)
   {
-    printModArray(modifications[i]);
+    printf("Gen: %d Child: %d Fitness: %lf\n", gens, i, fitness[i]);
   }
+  printIncorrectGuesses(probability[0], size, stats);
 
   // throwing out the trash
   for(i=0;i<MODARRAYSIZE;i++)
@@ -162,7 +172,17 @@ double** CreateNewGeneration(double** currentGen, double* fitness)
       free(child);
       child = NULL;
     }
+    else
+    {
+      child = CreateImmigrant();
+      memcpy(currentGen[i], child, sizeof(double) * NUMBEROFMODS);
+      free(child);
+      child = NULL;
+    }
   }
+  free(firstBest);
+  free(secondBest);
+  return currentGen;
 }
 
 double* CreateChild(double* parent1, double* parent2)
@@ -204,23 +224,54 @@ double* CreateBastard(double* parent1)
   return child;
 }
 
-double CalcFitness(double* probablity, int num, Stats* s)
+double* CreateImmigrant()
+{
+  double* child = malloc(sizeof(double) * NUMBEROFMODS);
+  child[COLDEV] = GetTenToHundred();            // colorDeviationAverage
+  child[SIGCOLDEV] = GetTenToHundred();            // sigColorDeviationAverage
+  child[AVGSIZEOFBLOBS] = GetHundredToTenThousand();    // avgSizeOfBlobss
+  child[SIGAVGSIZE] = GetHundredToTenThousand();    // sigAvgSizeOfBlobs
+  child[SIZEDEV] = GetThousandToHundThousand();  // sizeDeviation
+  child[SIGSIZEDEV] = GetThousandToHundThousand();  // sigSizeDeviation
+  child[LARGECOLDEV] = GetHundredToTenThousand();    // largestColorDeviation
+  child[PCLARGEBLOB] = GetTenToHundred();            // percentOfLargeBlobs
+  return child;
+}
+
+double CalcFitness(double* probability, int num, Stats* s)
 {
   int i;
   double numCorrect = 0;
   for(i=0;i<num;i++)
   {
-    if(MINCARTOON > probablity[i] && s[i].picType == 'p')
+    if(MINCARTOON > probability[i] && s[i].picType == 'p')
     {
       numCorrect += 1;
     }
-    else if(MINCARTOON < probablity[i] && s[i].picType == 'd')
+    else if(MINCARTOON < probability[i] && s[i].picType == 'd')
     {
       numCorrect += 1;
     }
   }
   return numCorrect/num;
 }
+
+void printIncorrectGuesses(double* probability, int num, Stats *s)
+{
+  int i;
+  for(i=0;i<num;i++)
+  {
+    if(MINCARTOON > probability[i] && s[i].picType == 'p')
+    {
+    }
+    else if(MINCARTOON < probability[i] && s[i].picType == 'd')
+    {
+    }
+    else
+      printf("%s\t\t%lf\n", s[i].name, probability[i]);
+  }
+}
+
 void printModArray(double* mods)
 {
   printf("Color dev mod: %f\n", mods[COLDEV]);
@@ -236,18 +287,18 @@ void printModArray(double* mods)
 
 double GetTenToHundred()
 {
-  double r = rand()%100;
-  return r/1000;
+  double r = rand()%10000;
+  return r/10000;
 }
 
 double GetHundredToTenThousand()
 {
-  double r = rand()%100;
-  return r/100000;
+  double r = rand()%10000;
+  return r/1000000;
 }
 
 double GetThousandToHundThousand()
 {
-  double r = rand()%100;
-  return r/1000000;
+  double r = rand()%10000;
+  return r/10000000;
 }
