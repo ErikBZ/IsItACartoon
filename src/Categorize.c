@@ -18,7 +18,7 @@
 #define LARGECOLDEV 6
 #define PCLARGEBLOB 7
 #define MODARRAYSIZE 20
-#define NUMBER_OF_GENERATIONS 10000
+#define NUMBER_OF_GENERATIONS 100000
 
 double GetTenToHundred();
 double GetHundredToTenThousand();
@@ -287,8 +287,8 @@ void printModArray(double* mods)
 
 double GetTenToHundred()
 {
-  double r = rand()%10000;
-  return r/10000;
+  double r = rand()%1000;
+  return r/1000000;
 }
 
 double GetHundredToTenThousand()
@@ -299,6 +299,6 @@ double GetHundredToTenThousand()
 
 double GetThousandToHundThousand()
 {
-  double r = rand()%10000;
-  return r/10000000;
+  double r = rand()%100000;
+  return r/1000000000;
 }
