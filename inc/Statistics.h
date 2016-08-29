@@ -23,9 +23,10 @@ typedef struct Stats
   double sigSizeDeviation;
   double largestColorDeviation;
   double percentOfLargeBlobs;
-  int largestBlob;
+  double largestBlob;
   int insignBlobs;
   int numOfBlobs;
+  int resolution;
 } Stats;
 
 // stuff for main, like finding files
@@ -57,6 +58,11 @@ double sizeDeviationWithSig(Blob* blobs, int size);
 double percentTakenByLargeBlobs(Blob* blobs, int size, double imgSize);
 
 Stats findStatsOfAnImage(struct Image* img, Blob* blobs, int size, char* t);
+Stats findStatsOfAnImage_Version2(struct Image* img, Blob* blobs,
+  int bArraySize, char* name);
+
+int getResolution(Blob* blobs, int size);
+int getImageResolution(struct Image* img);
 
 // using this for printing info
 void printStats(Stats s);

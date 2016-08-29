@@ -20,6 +20,11 @@
 #define MODARRAYSIZE 20
 #define NUMBER_OF_GENERATIONS 100000
 
+/*
+  Coming back and reading this code makes me very confused
+  I should have left more comments 
+*/
+
 double GetTenToHundred();
 double GetHundredToTenThousand();
 double GetThousandToHundThousand();

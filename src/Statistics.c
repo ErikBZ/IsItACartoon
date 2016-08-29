@@ -10,6 +10,8 @@
 #define NOTVISISTED 0
 #define PICTURETYPE 7
 
+// I think I'll create a method that does everying
+
 char* createFilename(char* d, char* f)
 {
   char *result = malloc(strlen(d) + strlen(f) + 1);
@@ -47,7 +49,7 @@ Stats* getAllStats(char** files, int size, double tol)
 
     int blobSize = 0;
     Blob* blobs = GetAllBlobsInImage(img, tol, &blobSize);
-    Stats s = findStatsOfAnImage(img, blobs, blobSize, files[i]);
+    Stats s = findStatsOfAnImage_Version2(img, blobs, blobSize, files[i]);
     stats[i] = s;
 
     printf("Image statistics calculated sucessfully\n");
@@ -75,6 +77,7 @@ byte isPPMImage(char* file)
   return 0;
 }
 
+// gets the color deviation in a single blob of an image
 double deviation(struct Image* img, Blob b)
 {
   double dev = 0;
@@ -246,6 +249,7 @@ double percentTakenByLargeBlobs(Blob* blobs, int size, double imgSize)
   return sum/imgSize;
 }
 
+// I'm retarded. Why am was I dividing color by size?
 Stats findStatsOfAnImage(struct Image* img, Blob* blobs, int size, char* t)
 {
   Stats stats;
@@ -255,21 +259,72 @@ Stats findStatsOfAnImage(struct Image* img, Blob* blobs, int size, char* t)
   stats.colorDeviationAverage = averageDeviation(img, blobs, size);
   stats.sigColorDeviationAverage = averageDeviationWithSig(img, blobs, size);
   stats.largestColorDeviation = findLargestColorDeviation(img, blobs, size);
-  stats.avgSizeOfBlobs = averageSizeOfBlobs(blobs, size);
-  stats.sigAvgSizeOfBlobs = averageSizeOfBlobsWithSig(blobs, size);
-  stats.sizeDeviation = sizeDeviation(blobs, size);
-  stats.sigSizeDeviation = sizeDeviationWithSig(blobs, size);
+  stats.avgSizeOfBlobs = averageSizeOfBlobs(blobs, size)/size;
+  stats.sigAvgSizeOfBlobs = averageSizeOfBlobsWithSig(blobs, size)/size;
+  stats.sizeDeviation = sizeDeviation(blobs, size)/size;
+  stats.sigSizeDeviation = sizeDeviationWithSig(blobs, size)/size;
   stats.percentOfLargeBlobs = percentTakenByLargeBlobs(blobs, size, img->NofC * img->NofR);
-  stats.largestBlob = findLargestBlob(blobs, size);
+  // there seems to be an error here. This should theoritcally always be less than 1
+  // but some pics of have larger than 1 blobs. I'll have to check this out
+  stats.largestBlob = (double)findLargestBlob(blobs, size)/size;
   stats.insignBlobs = numberOfInsignificantBlobs(blobs, size);
   stats.numOfBlobs = numberOfBlobs(blobs, size);
   return stats;
+}
+
+/*
+  A faster version of find stats of an image. This should replace it once it's complete
+*/
+Stats findStatsOfAnImage_Version2(struct Image* img, Blob* blobs,
+  int bArraySize, char* name)
+{
+  Stats s;
+  memset(s.name, 0, 30);
+  strcpy(s.name, name);
+  s.picType = name[PICTURETYPE];
+  int res1, res2;
+  res1 = getResolution(blobs, bArraySize);
+  res2 = getImageResolution(img);
+  s.resolution = res1;
+
+  // settings these to 0 for now
+  // only for testing some stuff real quick  
+  s.colorDeviationAverage = 0;
+  s.sigColorDeviationAverage = 0;
+  s.largestColorDeviation = 0;
+  s.avgSizeOfBlobs = 0;
+  s.sigAvgSizeOfBlobs = 0;
+  s.sizeDeviation = 0;
+  s.sigSizeDeviation = 0;
+  s.percentOfLargeBlobs = 0;
+  s.largestBlob = 0;
+  s.insignBlobs = 0;
+  s.numOfBlobs = 0;
+  
+  return s;
+}
+
+int getResolution(Blob* blobs, int size)
+{
+  int i, sum;
+  sum = 0;
+  for(i=0;i<size;i++)
+  {
+    sum += blobs[i].size;
+  }
+  return sum;
+}
+
+int getImageResolution(struct Image* img)
+{
+  return img->NofR * img->NofC;
 }
 
 void printStats(Stats s)
 {
   printf("%s\n", s.name);
   printf("Picture Type: %c\n", s.picType);
+  printf("Resolution: %d\n", s.resolution);
   printf("Color Deviation Average: %lf\n", s.colorDeviationAverage);
   printf("Significant Color Deviation Average: %lf\n", s.sigColorDeviationAverage);
   printf("Largest Color Deviation: %lf\n", s.largestColorDeviation);
@@ -278,7 +333,7 @@ void printStats(Stats s)
   printf("Size Deviation: %lf\n", s.sizeDeviation);
   printf("Significant Size Deviation: %lf\n", s.sigSizeDeviation);
   printf("Percent Taken By Large Blobs: %lf\n", s.percentOfLargeBlobs);
-  printf("Largest Blob: %d\n", s.largestBlob);
+  printf("Largest Blob: %lf\n", s.largestBlob);
   printf("Number of Insignificat Blobs: %d\n", s.insignBlobs);
   printf("Number of Blobs: %d\n\n", s.numOfBlobs);
 }

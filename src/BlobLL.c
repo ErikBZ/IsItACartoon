@@ -185,9 +185,13 @@ Blob CalculateBlob(struct Image* img, double tol, byte* visited, int start)
 }
 
 // this returns the final array of blobs that contains all blobs in the image
+// this should calc an entire image and the sum of these blobs
+// should equal the resolution of the image 
+// IE is should be img.NofR * img.NofC, but is isn't so idk what's going on
 Blob* GetAllBlobsInImage(struct Image* img, double tol, int* size)
 {
   byte* visitedArray = malloc(sizeof(int) * img->NofC * img->NofR);
+  initializeVisitedArray(visitedArray);
   *size = 0;
   int max = 10;
   Blob* blobs = malloc(sizeof(Blob)*max);

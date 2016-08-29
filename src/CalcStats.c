@@ -8,6 +8,7 @@
 
 #define DIRECTORY "./data/"
 #define NUMBEROFFILES 20
+#define TOLERANCE 20.0
 
 int main(int args, char** argv)
 {
@@ -43,7 +44,7 @@ int main(int args, char** argv)
     }
   }
 
-  Stats* stats = getAllStats(filenames, index, 20.0);
+  Stats* stats = getAllStats(filenames, index, TOLERANCE);
 
   FILE* file = fopen("output", "wb");
   if(file != NULL)
