@@ -1,8 +1,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "Statistics.h"
+#include "BlobLL.h"
+
+void TestCalcBlob();
+void ReadData();
 
 void main(int argc, char** argv)
+{
+	ReadData();
+	exit(0);
+}
+
+void ReadData()
 {
 	FILE* file = fopen("output", "rb");
 	int size;
@@ -23,5 +33,21 @@ void main(int argc, char** argv)
 
 	free(stats);
 	fclose(file);
-	exit(0);
+}
+
+void TestCalcBlob()
+{
+	struct Image img;
+	img.NofC = 0;
+	img.NofR = 0;
+	img.isColor = 0;
+	img.gray = NULL;
+	img.blue = NULL;
+	img.green = NULL;
+	img.red = NULL;
+
+	ReadImage("./data/d_jojo.ppm", &img);
+	int blobsSize = 0;
+	Blob* blobs = GetAllBlobsInImage(&img, 20.0, &blobsSize);
+	printf("Hello");
 }

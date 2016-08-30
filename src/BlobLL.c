@@ -143,7 +143,9 @@ Blob CalculateBlob(struct Image* img, double tol, byte* visited, int start)
   intQueue.head = NULL;
   intQueue.size = 0;
   enqueue(&intQueue, start);
-  visited[0] = 1;
+  // accidently had this setting visited[0] to 1 over
+  // and over again, so initial pixels were always counted twice
+  visited[start] = 1;
 
   while(intQueue.size != 0)
   {
@@ -191,17 +193,13 @@ Blob CalculateBlob(struct Image* img, double tol, byte* visited, int start)
 Blob* GetAllBlobsInImage(struct Image* img, double tol, int* size)
 {
   byte* visitedArray = malloc(sizeof(int) * img->NofC * img->NofR);
-  initializeVisitedArray(visitedArray);
+  InitializeVisitedArray(visitedArray, img->NofC * img->NofR);
+
   *size = 0;
   int max = 10;
   Blob* blobs = malloc(sizeof(Blob)*max);
 
   int i;
-  for(i=0;i<img->NofC * img->NofR;i++)
-  {
-    visitedArray[i] = 0;
-  }
-
   for(i=0;i<img->NofC * img->NofR;i++)
   {
     if(!visitedArray[i])
@@ -213,6 +211,17 @@ Blob* GetAllBlobsInImage(struct Image* img, double tol, int* size)
   
   free(visitedArray);
   return blobs;
+}
+
+// Initializing the visisted array
+byte* InitializeVisitedArray(byte* array, int size)
+{
+  int i = 0;
+  for(i=0;i<size;i++)
+  {
+    array[i] = 0;
+  }
+  return array;
 }
 
 // adds an integers to an integer array

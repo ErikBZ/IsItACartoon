@@ -285,6 +285,10 @@ Stats findStatsOfAnImage_Version2(struct Image* img, Blob* blobs,
   int res1, res2;
   res1 = getResolution(blobs, bArraySize);
   res2 = getImageResolution(img);
+  if(res1 != res2)
+  {
+    printf("res1 does not equal res2\n");
+  }
   s.resolution = res1;
 
   // settings these to 0 for now

@@ -50,7 +50,7 @@ Blob* AddBlobToArray(Blob* blob, Blob b, int* sizeP, int* maxP);
 Blob* GetAllBlobsInImage(struct Image* img, double tol, int* size);
 void FreeBlob(Blob* b);
 void FreeBlobs(Blob* b, int num);
-void InitializeVisitedArraY(byte* visited);
+byte* InitializeVisitedArray(byte* array, int size);
 
 // keep this at the bottom
 #endif
