@@ -199,7 +199,6 @@ double averageDeviationWithSig(struct Image* img, Blob* blobs, int size)
   int i;
   int numberOfSigBlobs = size - numberOfInsignificantBlobs(blobs, size);
   double sum = 0;
-  double large = 0;
   double dev = 0;
   for(i=0;i<size;i++)
   {
@@ -274,6 +273,7 @@ Stats findStatsOfAnImage(struct Image* img, Blob* blobs, int size, char* t)
 
 /*
   A faster version of find stats of an image. This should replace it once it's complete
+	this method is cancer
 */
 Stats findStatsOfAnImage_Version2(struct Image* img, Blob* blobs,
   int bArraySize, char* name)
@@ -283,27 +283,87 @@ Stats findStatsOfAnImage_Version2(struct Image* img, Blob* blobs,
   strcpy(s.name, name);
   s.picType = name[PICTURETYPE];
   int res1, res2;
-  res1 = getResolution(blobs, bArraySize);
-  res2 = getImageResolution(img);
-  if(res1 != res2)
-  {
-    printf("res1 does not equal res2\n");
-  }
+  res1 = getImageResolution(img);
   s.resolution = res1;
 
-  // settings these to 0 for now
-  // only for testing some stuff real quick  
-  s.colorDeviationAverage = 0;
-  s.sigColorDeviationAverage = 0;
-  s.largestColorDeviation = 0;
-  s.avgSizeOfBlobs = 0;
-  s.sigAvgSizeOfBlobs = 0;
-  s.sizeDeviation = 0;
-  s.sigSizeDeviation = 0;
-  s.percentOfLargeBlobs = 0;
-  s.largestBlob = 0;
-  s.insignBlobs = 0;
-  s.numOfBlobs = 0;
+  int i=0;
+  double sum = 0;
+	int numOfBlobsCalculated = 0;
+  double largeSum = 0;
+	int numOfLargeBlobsCalculated = 0;
+  double large = 0;  
+  double dev = 0;
+	int sumOfSize = 0;
+	int sigSumOfSize = 0;
+	int sumOfLargeBlobs = 0;
+	int largestBlobTracker = 0;
+	int insignBlobsTracker = 0;
+
+	// packing a bunch of shit in this one for loop
+	// I need one more after this and all the stats will be done
+	// until i find out that i did this completely incorrectly
+  for(i=0;i<bArraySize;i++)
+  {
+		sumOfSize += blobs[i].size;
+    dev = deviation(img, blobs[i]);
+    // summing up all deviations that are not of size 1
+		if(blobs[i].size > 1)
+		{
+    	sum += dev;
+			numOfBlobsCalculated++;
+			sigSumOfSize += blobs[i].size;
+		}
+		else
+		{
+			insignBlobsTracker++;
+		}
+		// gets the sum of the deviations that were not calculated
+		// with small blobs
+		if(blobs[i].size > 10)
+		{
+			largeSum += dev;
+			numOfLargeBlobsCalculated++;
+		}
+		if(dev > large)
+		{
+			large = dev;
+		}
+		if(blobs[i].size > (double)s.resolution * 0.01)
+		{
+			sumOfLargeBlobs += blobs[i].size;
+		}
+		if(blobs[i].size > largestBlobTracker)
+		{
+				largestBlobTracker = blobs[i].size;
+		}
+  }
+	s.colorDeviationAverage = sum/numOfBlobsCalculated;
+	s.sigColorDeviationAverage = largeSum/numOfLargeBlobsCalculated;
+	s.largestColorDeviation = large;
+  s.avgSizeOfBlobs = ((double)sumOfSize/bArraySize)/s.resolution;
+  s.sigAvgSizeOfBlobs = ((double)sigSumOfSize/numOfBlobsCalculated)/s.resolution;
+  s.percentOfLargeBlobs = (double)sumOfLargeBlobs/s.resolution;
+  s.largestBlob = largestBlobTracker/s.resolution;
+  s.numOfBlobs = bArraySize;
+  s.insignBlobs = insignBlobsTracker;
+
+	double avg = s.avgSizeOfBlobs;
+	double newSum = 0;
+	double sigSum = 0;
+	int sigTracker = 0;
+  for(i=0;i<bArraySize;i++)
+  {
+    newSum += (blobs[i].size - avg) * (blobs[i].size - avg);
+		if(blobs[i].size > 1)
+		{
+			sigTracker++;
+			sigSum += (blobs[i].size - avg) * (blobs[i].size - avg);
+		}
+  }
+	newSum = newSum/bArraySize;
+	sigSum = sigSum/sigTracker;
+  s.sizeDeviation = sqrt(newSum)/s.resolution;
+  s.sigSizeDeviation = sqrt(sigSum)/s.resolution;
   
   return s;
 }
@@ -329,15 +389,15 @@ void printStats(Stats s)
   printf("%s\n", s.name);
   printf("Picture Type: %c\n", s.picType);
   printf("Resolution: %d\n", s.resolution);
-  printf("Color Deviation Average: %lf\n", s.colorDeviationAverage);
-  printf("Significant Color Deviation Average: %lf\n", s.sigColorDeviationAverage);
-  printf("Largest Color Deviation: %lf\n", s.largestColorDeviation);
-  printf("Average Size of Blobs: %lf\n", s.avgSizeOfBlobs);
-  printf("Significant Average Size of Blobs: %lf\n", s.sigAvgSizeOfBlobs);
-  printf("Size Deviation: %lf\n", s.sizeDeviation);
-  printf("Significant Size Deviation: %lf\n", s.sigSizeDeviation);
-  printf("Percent Taken By Large Blobs: %lf\n", s.percentOfLargeBlobs);
-  printf("Largest Blob: %lf\n", s.largestBlob);
+  printf("Color Deviation Average: %e\n", s.colorDeviationAverage);
+  printf("Significant Color Deviation Average: %e\n", s.sigColorDeviationAverage);
+  printf("Largest Color Deviation: %e\n", s.largestColorDeviation);
+  printf("Average Size of Blobs: %e\n", s.avgSizeOfBlobs);
+  printf("Significant Average Size of Blobs: %e\n", s.sigAvgSizeOfBlobs);
+  printf("Size Deviation: %e\n", s.sizeDeviation);
+  printf("Significant Size Deviation: %e\n", s.sigSizeDeviation);
+  printf("Percent Taken By Large Blobs: %e\n", s.percentOfLargeBlobs);
+  printf("Largest Blob: %e\n", s.largestBlob);
   printf("Number of Insignificat Blobs: %d\n", s.insignBlobs);
   printf("Number of Blobs: %d\n\n", s.numOfBlobs);
 }

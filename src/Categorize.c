@@ -25,7 +25,8 @@
   I should have left more comments 
 */
 
-double GetTenToHundred();
+int GetRandomIntInRange(int min, int max);
+double GetRandomDouble();
 double GetHundredToTenThousand();
 double GetThousandToHundThousand();
 double CalcFitness(double* probability, int num, Stats* s);
@@ -220,7 +221,7 @@ double* CreateBastard(double* parent1)
       child[i] = parent1[i];
     // equal to coldev, SIGCOLDEV, PCLARGEBLOB
     else if(i == COLDEV || i==SIGCOLDEV || i==PCLARGEBLOB)
-      child[i] = GetTenToHundred();
+      child[i] = GetRandomDouble();
     else if(i==AVGSIZEOFBLOBS || i== SIGAVGSIZE || i==LARGECOLDEV)
       child[i] = GetHundredToTenThousand();
     else
@@ -232,14 +233,14 @@ double* CreateBastard(double* parent1)
 double* CreateImmigrant()
 {
   double* child = malloc(sizeof(double) * NUMBEROFMODS);
-  child[COLDEV] = GetTenToHundred();            // colorDeviationAverage
-  child[SIGCOLDEV] = GetTenToHundred();            // sigColorDeviationAverage
+  child[COLDEV] = GetRandomDouble();            // colorDeviationAverage
+  child[SIGCOLDEV] = GetRandomDouble();            // sigColorDeviationAverage
   child[AVGSIZEOFBLOBS] = GetHundredToTenThousand();    // avgSizeOfBlobss
   child[SIGAVGSIZE] = GetHundredToTenThousand();    // sigAvgSizeOfBlobs
   child[SIZEDEV] = GetThousandToHundThousand();  // sizeDeviation
   child[SIGSIZEDEV] = GetThousandToHundThousand();  // sigSizeDeviation
   child[LARGECOLDEV] = GetHundredToTenThousand();    // largestColorDeviation
-  child[PCLARGEBLOB] = GetTenToHundred();            // percentOfLargeBlobs
+  child[PCLARGEBLOB] = GetRandomDouble();            // percentOfLargeBlobs
   return child;
 }
 
@@ -290,7 +291,8 @@ void printModArray(double* mods)
   printf("\n");
 }
 
-double GetTenToHundred()
+// ew these are so bad
+double GetRandomDouble()
 {
   double r = rand()%1000;
   return r/1000000;
@@ -306,4 +308,10 @@ double GetThousandToHundThousand()
 {
   double r = rand()%100000;
   return r/1000000000;
+}
+
+// assuming that x is the lesser number and y is the larger
+int GetRandomIntInRange(int min, int max)
+{
+  return rand()%max + min;
 }
